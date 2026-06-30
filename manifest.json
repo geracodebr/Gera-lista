@@ -1,104 +1,23 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Gerar Ícones GeraLista</title>
-<style>
-  body { font-family: sans-serif; background: #f0ebe0; display: flex; flex-direction: column; align-items: center; padding: 30px; gap: 20px; }
-  h2 { color: #1a4fa0; }
-  .card { background: #fff; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
-  canvas { border-radius: 20px; display: block; margin: 0 auto 12px; }
-  a { display: inline-block; background: #1a4fa0; color: #fff; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; }
-  p { color: #555; font-size: 14px; margin-top: 6px; }
-</style>
-</head>
-<body>
-<h2>🛒 Ícones do GeraLista</h2>
-
-<div class="card">
-  <canvas id="c512" width="512" height="512"></canvas>
-  <a id="dl512" download="icon-512.png">⬇️ Baixar icon-512.png</a>
-  <p>512 × 512 px</p>
-</div>
-
-<div class="card">
-  <canvas id="c192" width="192" height="192"></canvas>
-  <a id="dl192" download="icon-192.png">⬇️ Baixar icon-192.png</a>
-  <p>192 × 192 px</p>
-</div>
-
-<script>
-function drawIcon(canvas) {
-  const s = canvas.width;
-  const ctx = canvas.getContext('2d');
-  const r = s * 0.18; // border radius
-
-  // fundo arredondado azul
-  ctx.beginPath();
-  ctx.moveTo(r, 0);
-  ctx.lineTo(s - r, 0);
-  ctx.quadraticCurveTo(s, 0, s, r);
-  ctx.lineTo(s, s - r);
-  ctx.quadraticCurveTo(s, s, s - r, s);
-  ctx.lineTo(r, s);
-  ctx.quadraticCurveTo(0, s, 0, s - r);
-  ctx.lineTo(0, r);
-  ctx.quadraticCurveTo(0, 0, r, 0);
-  ctx.closePath();
-  ctx.fillStyle = '#1a4fa0';
-  ctx.fill();
-
-  // escala proporcional
-  const sc = s / 512;
-  ctx.save();
-  ctx.scale(sc, sc);
-
-  // carrinho — corpo
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 22;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.beginPath();
-  ctx.moveTo(110, 130);
-  ctx.lineTo(140, 130);
-  ctx.lineTo(175, 300);
-  ctx.lineTo(375, 300);
-  ctx.lineTo(410, 180);
-  ctx.lineTo(155, 180);
-  ctx.stroke();
-
-  // rodas
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath(); ctx.arc(210, 340, 28, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(340, 340, 28, 0, Math.PI*2); ctx.fill();
-
-  // grades verticais
-  ctx.lineWidth = 12;
-  [[190,180,180,298],[250,180,248,298],[310,180,316,298],[370,180,374,270]].forEach(([x1,y1,x2,y2]) => {
-    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-  });
-
-  // texto GeraLista
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 68px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('GeraLista', 256, 430);
-
-  // linha dourada
-  ctx.fillStyle = '#ffd580';
-  ctx.beginPath();
-  ctx.roundRect(120, 445, 272, 7, 3);
-  ctx.fill();
-
-  ctx.restore();
-
-  // link download
-  const id = s === 512 ? 'dl512' : 'dl192';
-  document.getElementById(id).href = canvas.toDataURL('image/png');
+{
+  "name": "GeraLista",
+  "short_name": "GeraLista",
+  "description": "Lista de compras com controle de orçamento",
+  "start_url": "/Gera-lista/",
+  "scope": "/Gera-lista/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0ebe0",
+  "theme_color": "#1a4fa0",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
-
-drawIcon(document.getElementById('c512'));
-drawIcon(document.getElementById('c192'));
-</script>
-</body>
-</html>
