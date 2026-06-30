@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
-:root { --blue:#1a4fa0; --cream:#f0ebe0; --cream-dk:#e8e2d4; --border:#d4cfc4; --red:#e05a00; --green:#22c55e; }
+:root { --blue:#2d8a2d; --cream:#fafde8; --cream-dk:#f0f7c8; --border:#c8e08a; --red:#e05a00; --green:#f5c800; }
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
 
 .header { background:var(--blue); color:#fff; padding:14px 16px 12px; position:sticky; top:0; z-index:50; }
@@ -19,11 +19,11 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .bcol+.bcol { border-left:1px solid rgba(255,255,255,.2); }
 .bcol-label { font-size:10px; opacity:.75; text-transform:uppercase; margin-bottom:2px; }
 .bcol-val { font-size:14px; font-weight:700; }
-.bcol-val.ok{color:#86efac;} .bcol-val.warn{color:#fde68a;} .bcol-val.neg{color:#fca5a5;}
+.bcol-val.ok{color:#a8f0a8;} .bcol-val.warn{color:#ffe680;} .bcol-val.neg{color:#fca5a5;}
 .btn-budget { background:rgba(255,255,255,.2); border:none; color:#fff; font-size:12px; padding:5px 10px; border-radius:6px; cursor:pointer; margin-top:8px; width:100%; }
 .progress-wrap { margin-top:8px; background:rgba(255,255,255,.15); border-radius:99px; height:4px; overflow:hidden; }
-.progress-fill { height:100%; border-radius:99px; background:#86efac; transition:width .3s,background .3s; }
-.progress-fill.warn{background:#fde68a;} .progress-fill.danger{background:#fca5a5;}
+.progress-fill { height:100%; border-radius:99px; background:#a8f0a8; transition:width .3s,background .3s; }
+.progress-fill.warn{background:#ffe680;} .progress-fill.danger{background:#fca5a5;}
 
 .add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; }
 .add-bar input { flex:1; border:none; background:transparent; outline:none; font-size:15px; }
@@ -36,7 +36,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .item.done { opacity:.45; }
 .item.done .item-name { text-decoration:line-through; }
 .chk { width:22px; height:22px; border:2px solid #aaa; border-radius:4px; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#fff; }
-.chk.on { background:var(--blue); border-color:var(--blue); }
+.chk.on { background:#2d8a2d; border-color:#2d8a2d; }
 .chk.on::after { content:'✓'; font-size:13px; font-weight:700; color:#fff; }
 .item-mid { flex:1; min-width:0; }
 .item-name { font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; user-select:none; }
@@ -45,13 +45,13 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .item-price { color:var(--red); font-size:14px; font-weight:600; cursor:pointer; padding:2px 8px; border:1px dashed #e0a0a0; border-radius:4px; background:#fff8f5; white-space:nowrap; }
 .item-qty-row { display:flex; align-items:center; gap:5px; }
 .btn-q { width:28px; height:28px; border:none; border-radius:50%; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
-.btn-q.minus{background:#ef4444;} .btn-q.plus{background:#22c55e;}
+.btn-q.minus{background:#ef4444;} .btn-q.plus{background:#2d8a2d;}
 .qty-lbl { font-size:13px; color:#555; min-width:28px; text-align:center; cursor:pointer; }
 .btn-rm { background:none; border:none; cursor:pointer; color:#bbb; font-size:18px; padding:2px; }
 
 .empty { text-align:center; padding:3rem 1rem; color:#aaa; font-size:14px; }
 
-.footer { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:var(--blue); color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; z-index:40; }
+.footer { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:#2d8a2d; color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; z-index:40; }
 .footer span:first-child { font-size:13px; opacity:.85; }
 .footer span:last-child { font-size:18px; font-weight:700; }
 
@@ -70,16 +70,43 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .np-btn { padding:16px; font-size:20px; font-weight:500; border:none; border-radius:10px; background:#f4f4f4; cursor:pointer; }
 .np-btn:active{background:#e0e0e0;}
 .np-btn.del{background:#ef4444;color:#fff;}
-.np-btn.ok{background:var(--green);color:#fff;font-size:18px;}
+.np-btn.ok{background:#2d8a2d;color:#fff;font-size:18px;}
 
 .qty-row { display:flex; align-items:center; justify-content:center; gap:24px; margin:16px 0; }
-.btn-qm { width:48px; height:48px; border:2px solid var(--blue); border-radius:50%; background:none; color:var(--blue); font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.btn-qm { width:48px; height:48px; border:2px solid #2d8a2d; border-radius:50%; background:none; color:#2d8a2d; font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .qty-num { font-size:24px; font-weight:700; min-width:60px; text-align:center; }
 
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash" style="position:fixed;inset:0;background:#2d8a2d;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .6s ease;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:110px;height:110px;border-radius:22px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
+  <rect width="512" height="512" rx="100" fill="#2d8a2d"/>
+    <g stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <polyline points="110,130 140,130 175,300 375,300 410,180 155,180" stroke-width="22"/>
+      <line x1="190" y1="180" x2="180" y2="298" stroke-width="12"/>
+      <line x1="250" y1="180" x2="248" y2="298" stroke-width="12"/>
+      <line x1="310" y1="180" x2="316" y2="298" stroke-width="12"/>
+      <line x1="370" y1="180" x2="374" y2="270" stroke-width="12"/>
+    </g>
+    <circle cx="210" cy="340" r="28" fill="#ffffff"/>
+    <circle cx="340" cy="340" r="28" fill="#ffffff"/>
+    <text x="256" y="430" font-family="Arial,sans-serif" font-size="68" font-weight="900" fill="#ffffff" text-anchor="middle">GeraLista</text>
+  <rect x="120" y="445" width="272" height="7" rx="3" fill="#f5c800"/>
+  </svg>
+
+  <div style="color:#fff;font-size:28px;font-weight:900;letter-spacing:1px">GeraLista</div>
+  <div style="color:#f5c800;font-size:13px;letter-spacing:2px;text-transform:uppercase">Lista de Compras</div>
+
+  <div style="position:absolute;bottom:40px;text-align:center;">
+    <div style="color:rgba(255,255,255,.5);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Desenvolvido por</div>
+    <div style="color:#fff;font-size:15px;font-weight:700;letter-spacing:1px">GeraCodeBR</div>
+    <div style="color:rgba(255,255,255,.4);font-size:10px;margin-top:4px">© 2026 · Todos os direitos reservados</div>
+  </div>
+</div>
 
 <div class="header">
   <div class="header-title">🛒 GeraLista</div>
@@ -247,6 +274,15 @@ function render() {
     const chk = document.createElement('div');
     chk.className = 'chk' + (item.checked ? ' on' : '');
     chk.onclick = () => { item.checked = !item.checked; save(); render();
+
+// Splash screen
+window.addEventListener('load', () => {
+  const splash = document.getElementById('splash');
+  setTimeout(() => {
+    splash.style.opacity = '0';
+    setTimeout(() => splash.style.display = 'none', 600);
+  }, 2000);
+});
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/Gera-lista/sw.js');
