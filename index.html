@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GeraLista</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a4fa0">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
 :root { --blue:#1a4fa0; --cream:#f0ebe0; --cream-dk:#e8e2d4; --border:#d4cfc4; --red:#e05a00; --green:#22c55e; }
@@ -243,7 +246,11 @@ function render() {
     /* checkbox */
     const chk = document.createElement('div');
     chk.className = 'chk' + (item.checked ? ' on' : '');
-    chk.onclick = () => { item.checked = !item.checked; save(); render(); };
+    chk.onclick = () => { item.checked = !item.checked; save(); render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/Gera-lista/sw.js');
+} };
 
     /* meio: nome + subtotal */
     const mid = document.createElement('div');
