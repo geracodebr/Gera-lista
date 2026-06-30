@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lista de Compras</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+:root { --blue:#1a4fa0; --cream:#f0ebe0; --cream-dk:#e8e2d4; --border:#d4cfc4; --red:#e05a00; --green:#22c55e; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+
+/* HEADER */
+.header { background:var(--blue); color:#fff; padding:14px 16px 12px; position:sticky; top:0; z-index:50; }
+.header-title { text-align:center; font-size:17px; font-weight:700; margin-bottom:10px; }
+.budget-bar { display:flex; background:rgba(255,255,255,.12); border-radius:10px; overflow:hidden; }
+.bcol { flex:1; padding:8px 6px; text-align:center; }
+.bcol+.bcol { border-left:1px solid rgba(255,255,255,.2); }
+.bcol-label { font-size:10px; opacity:.75; text-transform:uppercase; margin-bottom:2px; }
+.bcol-val { font-size:14px; font-weight:700; }
+.bcol-val.ok{color:#86efac;} .bcol-val.warn{color:#fde68a;} .bcol-val.neg{color:#fca5a5;}
+.btn-budget { background:rgba(255,255,255,.2); border:none; color:#fff; font-size:12px; padding:5px 10px; border-radius:6px; cursor:pointer; margin-top:8px; width:100%; }
+.progress-wrap { margin-top:8px; background:rgba(255,255,255,.15); border-radius:99px; height:4px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:99px; background:#86efac; transition:width .3s,background .3s; }
+.progress-fill.warn{background:#fde68a;} .progress-fill.danger{background:#fca5a5;}
+
+/* ADD BAR */
+.add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; }
+.add-bar input[type=text] { flex:1; border:none; background:transparent; outline:none; font-size:15px; }
+.btn-add { background:var(--blue); color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:15px; cursor:pointer; }
+.btn-cam { background:#f0f0f0; border:none; border-radius:8px; padding:8px 10px; font-size:18px; cursor:pointer; position:relative; overflow:hidden; }
+.btn-cam input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; font-size:0; }
+.btn-dots { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; gap:4px; padding:6px; align-items:center; justify-content:center; }
+.btn-dots span { width:4px; height:4px; background:#666; border-radius:50%; display:block; }
+
+/* LIST */
+.list-area { flex:1; overflow-y:auto; padding-bottom:80px; }
+.item { background:var(--cream); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; }
+.item.done { opacity:.45; }
+.item.done .item-name { text-decoration:line-through; }
+.chk { width:22px; height:22px; border:2px solid #aaa; border-radius:4px; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#fff; }
+.chk.on { background:var(--blue); border-color:var(--blue); }
+.chk.on::after { content:'✓'; font-size:13px; font-weight:700; color:#fff; }
+.item-mid { flex:1; min-width:0; }
+.item-name { font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.item-sub { font-size:12px; color:#888; margin-top:2px; }
+.item-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.item-price { color:var(--red); font-size:14px; font-weight:600; cursor:pointer; padding:2px 8px; border:1px dashed #e0a0a0; border-radius:4px; background:#fff8f5; white-space:nowrap; }
+.item-qty-row { display:flex; align-items:center; gap:5px; }
+.btn-q { width:28px; height:28px; border:none; border-radius:50%; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
+.btn-q.minus{background:#ef4444;} .btn-q.plus{background:#22c55e;}
+.qty-lbl { font-size:13px; color:#555; min-width:28px; text-align:center; cursor:pointer; }
+.btn-rm { background:none; border:none; cursor:pointer; color:#bbb; font-size:18px; padding:2px; }
+.empty { text-align:center; padding:3rem 1rem; color:#aaa; font-size:14px; }
+
+/* FOOTER */
+.footer { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:var(--blue); color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; z-index:40; }
+.footer span:first-child { font-size:13px; opacity:.85; }
+.footer span:last-child { font-size:18px; font-weight:700; }
+
+/* OVERLAYS */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; align-items:center; justify-content:center; }
+.overlay.open { display:flex; }
+.overlay.bottom { align-items:flex-end; justify-content:center; }
+.modal { background:#fff; border-radius:14px; width:88%; max-width:340px; padding:20px; }
+.modal-title { font-size:15px; color:#555; text-align:center; margin-bottom:14px; }
+.modal-actions { display:flex; justify-content:flex-end; gap:16px; padding-top:14px; border-top:1px solid #eee; margin-top:8px; }
+.btn-cancel { background:none; border:none; color:#888; font-size:15px; font-weight:600; cursor:pointer; padding:8px; }
+.btn-ok { background:none; border:none; color:var(--blue); font-size:15px; font-weight:700; cursor:pointer; padding:8px; }
+
+/* NUMPAD */
+.np-display { font-size:28px; font-weight:700; text-align:center; padding:12px; border:1.5px solid #ddd; border-radius:8px; margin-bottom:14px; background:#fafafa; min-height:54px; display:flex; align-items:center; justify-content:center; }
+.np-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.np-btn { padding:16px; font-size:20px; font-weight:500; border:none; border-radius:10px; background:#f4f4f4; cursor:pointer; }
+.np-btn:active{background:#e0e0e0;}
+.np-btn.del{background:#ef4444;color:#fff;font-size:16px;}
+.np-btn.ok{background:var(--green);color:#fff;font-size:18px;}
+
+/* QTY */
+.qty-row { display:flex; align-items:center; justify-content:center; gap:24px; margin:16px 0; }
+.btn-qm { width:48px; height:48px; border:2px solid var(--blue); border-radius:50%; background:none; color:var(--blue); font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.qty-num { font-size:24px; font-weight:700; min-width:60px; text-align:center; }
+
+/* SCAN STATUS */
+.scan-modal { background:#fff; border-radius:14px; width:88%; max-width:340px; padding:24px 20px; }
+.scan-spinner { width:48px; height:48px; border:4px solid #eee; border-top-color:var(--blue); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 16px; }
+@keyframes spin{to{transform:rotate(360deg)}}
+.scan-msg { text-align:center; font-size:15px; color:#444; line-height:1.5; }
+.scan-msg.ok { color:#16a34a; font-weight:700; }
+.scan-msg.err { color:#ef4444; }
+
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">🛒 LISTA DE COMPRAS</div>
+  <div class="budget-bar">
+    <div class="bcol"><div class="bcol-label">Disponível</div><div class="bcol-val" id="h-disp">R$ 0,00</div></div>
+    <div class="bcol"><div class="bcol-label">Gasto</div><div class="bcol-val warn" id="h-gasto">R$ 0,00</div></div>
+    <div class="bcol"><div class="bcol-label">Saldo</div><div class="bcol-val ok" id="h-saldo">R$ 0,00</div></div>
+  </div>
+  <button class="btn-budget" onclick="openBudget()">✏️ Definir orçamento disponível</button>
+  <div class="progress-wrap"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+</div>
+
+<!-- ADD BAR -->
+<div class="add-bar">
+  <input id="add-inp" type="text" placeholder="Nome do produto…" onkeydown="if(event.key==='Enter')addItem()">
+
+  <button class="btn-add" onclick="addItem()">+</button>
+  <button class="btn-dots" onclick="openMenu()"><span></span><span></span><span></span></button>
+</div>
+
+<div class="list-area" id="list">
+  <div class="empty" id="empty">Lista vazia. Adicione um produto acima!</div>
+</div>
+
+<div class="footer">
+  <span>Total da lista</span>
+  <span id="total">R$ 0,00</span>
+</div>
+
+<!-- NUMPAD preço -->
+<div class="overlay" id="np-overlay" onclick="closeNP()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="np-title">Preço unitário</div>
+    <div class="np-display" id="np-disp">R$ 0,00</div>
+    <div class="np-grid">
+      <button class="np-btn" onclick="npKey('7')">7</button><button class="np-btn" onclick="npKey('8')">8</button><button class="np-btn" onclick="npKey('9')">9</button>
+      <button class="np-btn" onclick="npKey('4')">4</button><button class="np-btn" onclick="npKey('5')">5</button><button class="np-btn" onclick="npKey('6')">6</button>
+      <button class="np-btn" onclick="npKey('1')">1</button><button class="np-btn" onclick="npKey('2')">2</button><button class="np-btn" onclick="npKey('3')">3</button>
+      <button class="np-btn del" onclick="npKey('del')">⌫</button><button class="np-btn" onclick="npKey('0')">0</button><button class="np-btn ok" onclick="npConfirm()">✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- NUMPAD orçamento -->
+<div class="overlay" id="bg-overlay" onclick="closeBG()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">💰 Quanto você tem disponível?</div>
+    <div class="np-display" id="bg-disp">R$ 0,00</div>
+    <div class="np-grid">
+      <button class="np-btn" onclick="bgKey('7')">7</button><button class="np-btn" onclick="bgKey('8')">8</button><button class="np-btn" onclick="bgKey('9')">9</button>
+      <button class="np-btn" onclick="bgKey('4')">4</button><button class="np-btn" onclick="bgKey('5')">5</button><button class="np-btn" onclick="bgKey('6')">6</button>
+      <button class="np-btn" onclick="bgKey('1')">1</button><button class="np-btn" onclick="bgKey('2')">2</button><button class="np-btn" onclick="bgKey('3')">3</button>
+      <button class="np-btn del" onclick="bgKey('del')">⌫</button><button class="np-btn" onclick="bgKey('0')">0</button><button class="np-btn ok" onclick="bgConfirm()">✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL QUANTIDADE -->
+<div class="overlay" id="qty-overlay" onclick="closeQty()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="qty-title">Quantidade</div>
+    <div class="qty-row">
+      <button class="btn-qm" onclick="qtyDelta(-1)">−</button>
+      <div class="qty-num" id="qty-num">1</div>
+      <button class="btn-qm" onclick="qtyDelta(1)">+</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeQty()">Cancelar</button>
+      <button class="btn-ok" onclick="qtyConfirm()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LIMPAR -->
+<div class="overlay" id="clear-overlay" onclick="clearCancel()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:16px;color:#333;margin-bottom:16px">Tem certeza que deseja limpar toda a lista e cesta de compras?</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="clearCancel()">Não</button>
+      <button class="btn-ok" style="color:#ef4444" onclick="clearConfirm()">Sim, limpar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div class="overlay bottom" id="menu-overlay" onclick="closeMenu()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:20px 24px 32px;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+    <div onclick="setFilter('cesta');closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ver produtos na cesta (<span id="m-cesta">0</span>)</div>
+    <div onclick="setFilter('lista');closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer;font-weight:700">Ver produtos na lista (<span id="m-lista">0</span>)</div>
+    <div onclick="setFilter('todos');closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Exibir todos os produtos (<span id="m-todos">0</span>)</div>
+    <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:14px 0 4px">Ordenação</div>
+    <div onclick="setSort('pad');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem padrão</div>
+    <div onclick="setSort('az');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (A para Z) ↑</div>
+    <div onclick="setSort('za');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (Z para A) ↓</div>
+    <div onclick="clearAll();closeMenu()" style="padding:14px 0;font-size:15px;cursor:pointer;color:#c00">Limpar lista e cesta de compras</div>
+  </div>
+</div>
+
+<script>
+let items = JSON.parse(localStorage.getItem('lc3_items') || '[]');
+let budget = parseFloat(localStorage.getItem('lc3_budget') || '0');
+let filter = 'lista', sort = 'pad';
+let npRaw = '', npId = null;
+let bgRaw = '';
+let qtyId = null, qtyVal = 1;
+
+
+const save = () => { localStorage.setItem('lc3_items', JSON.stringify(items)); localStorage.setItem('lc3_budget', String(budget)); };
+const fmt = v => 'R$\u00a0' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const getTotal = () => items.reduce((s,i) => s + i.qty * i.price, 0);
+
+function render() {
+  const total = getTotal(), saldo = budget - total;
+  const pct = budget > 0 ? Math.min(total/budget*100,100) : 0;
+  document.getElementById('h-disp').textContent = fmt(budget);
+  document.getElementById('h-gasto').textContent = fmt(total);
+  const se = document.getElementById('h-saldo');
+  se.textContent = fmt(saldo);
+  se.className = 'bcol-val '+(saldo<0?'neg':pct>=80?'warn':'ok');
+  document.getElementById('total').textContent = fmt(total);
+  const prog = document.getElementById('prog');
+  prog.style.width = pct+'%';
+  prog.className = 'progress-fill'+(pct>=100?' danger':pct>=80?' warn':'');
+
+  document.getElementById('m-cesta').textContent = items.filter(i=>i.checked).length;
+  document.getElementById('m-lista').textContent = items.filter(i=>!i.checked).length;
+  document.getElementById('m-todos').textContent = items.length;
+
+  let visible = [...items];
+  if (filter==='cesta') visible = visible.filter(i=>i.checked);
+  else if (filter==='lista') visible = visible.filter(i=>!i.checked);
+  if (sort==='az') visible.sort((a,b)=>a.name.localeCompare(b.name));
+  else if (sort==='za') visible.sort((a,b)=>b.name.localeCompare(a.name));
+
+  const list = document.getElementById('list');
+  list.querySelectorAll('.item').forEach(el=>el.remove());
+  document.getElementById('empty').style.display = visible.length?'none':'';
+
+  visible.forEach(item => {
+    const subtotal = item.qty * item.price;
+    const div = document.createElement('div');
+    div.className = 'item'+(item.checked?' done':'');
+
+    const chk = document.createElement('div');
+    chk.className = 'chk'+(item.checked?' on':'');
+    chk.onclick = () => { item.checked=!item.checked; save(); render(); };
+
+    const mid = document.createElement('div');
+    mid.className = 'item-mid';
+
+    const nm = document.createElement('div');
+    nm.className = 'item-name'; nm.textContent = item.name;
+
+    // subtotal qty x price
+    const sub = document.createElement('div');
+    sub.className = 'item-sub';
+    if (item.price > 0) {
+      sub.textContent = item.qty + 'x ' + fmt(item.price) + ' = ' + fmt(subtotal);
+    } else {
+      sub.textContent = 'Toque no preço para informar';
+    }
+    mid.append(nm, sub);
+
+    const right = document.createElement('div'); right.className = 'item-right';
+
+    const pr = document.createElement('div');
+    pr.className = 'item-price';
+    pr.textContent = item.price > 0 ? fmt(item.price) : '+ Preço';
+    pr.onclick = () => openNP(item.id);
+
+    const qrow = document.createElement('div'); qrow.className = 'item-qty-row';
+    const bm = document.createElement('button'); bm.className='btn-q minus'; bm.textContent='−';
+    bm.onclick = () => { if(item.qty>1){item.qty--;save();render();} };
+    const ql = document.createElement('div'); ql.className='qty-lbl'; ql.textContent=item.qty+'x'; ql.style.cursor='pointer';
+    ql.onclick = () => openQty(item.id);
+    const bp = document.createElement('button'); bp.className='btn-q plus'; bp.textContent='+';
+    bp.onclick = () => { item.qty++;save();render(); };
+    qrow.append(bm,ql,bp);
+    right.append(pr,qrow);
+
+    const rm = document.createElement('button'); rm.className='btn-rm'; rm.textContent='✕';
+    rm.onclick = () => { items=items.filter(i=>i.id!==item.id); save(); render(); };
+
+    div.append(chk, mid, right, rm);
+    list.insertBefore(div, document.getElementById('empty'));
+  });
+}
+
+function addItem() {
+  const inp = document.getElementById('add-inp');
+  const name = inp.value.trim(); if(!name) return;
+  const id = Date.now();
+  items.push({id,name,price:0,qty:1,checked:false});
+  save(); inp.value=''; render(); openNP(id);
+}
+
+// ── LEITOR DE CÓDIGO DE BARRAS via imagem ──
+async function handleBarcodeScan(input) {
+  const file = input.files[0];
+  input.value = '';
+  if (!file) return;
+
+  showScanOverlay('Analisando imagem…');
+
+  try {
+    const b64 = await fileToBase64(file);
+    const mime = file.type || 'image/jpeg';
+
+    // Envia imagem para o Claude extrair o código de barras
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 100,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mime, data: b64 } },
+            { type: 'text', text: 'Esta imagem contém um código de barras de produto. Responda APENAS com o número do código de barras (somente dígitos, sem espaços ou traços). Se não conseguir identificar nenhum código, responda exatamente: NAO_ENCONTRADO' }
+          ]
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const code = (data.content?.[0]?.text || '').trim().replace(/\D/g,'');
+
+    if (!code || code.length < 6) {
+      throw new Error('código não detectado');
+    }
+
+    await lookupBarcode(code);
+  } catch (e) {
+    hideScanOverlay();
+    openManualCode();
+  }
+}
+
+async function lookupBarcode(code) {
+  updateScanMsg('🔎 Buscando produto: ' + code + '…');
+  try {
+    const res = await fetch('https://world.openfoodfacts.org/api/v0/product/' + code + '.json');
+    const data = await res.json();
+    if (data.status === 1 && data.product) {
+      const p = data.product;
+      const name = p.product_name_pt || p.product_name || p.product_name_en || '';
+      if (!name) throw new Error('sem nome');
+      foundName = name; foundCode = code;
+      hideScanOverlay();
+      document.getElementById('found-name').textContent = foundName;
+      document.getElementById('found-code').textContent = 'Código: ' + foundCode;
+      document.getElementById('found-overlay').classList.add('open');
+    } else throw new Error('não encontrado');
+  } catch {
+    hideScanOverlay();
+    // produto não encontrado — digitar nome, mas já com código preenchido
+    document.getElementById('manual-inp').value = '';
+    document.getElementById('notfound-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('manual-inp').focus(), 200);
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+function showScanOverlay(msg) {
+  document.getElementById('scan-spinner').style.display = '';
+  document.getElementById('scan-msg').textContent = msg;
+  document.getElementById('scan-msg').className = 'scan-msg';
+  document.getElementById('scan-actions').style.display = 'none';
+  document.getElementById('scan-overlay').classList.add('open');
+}
+
+function updateScanMsg(msg, cls='') {
+  document.getElementById('scan-msg').textContent = msg;
+  document.getElementById('scan-msg').className = 'scan-msg ' + cls;
+}
+
+function hideScanOverlay() {
+  document.getElementById('scan-overlay').classList.remove('open');
+}
+
+function closeScanOverlay() { hideScanOverlay(); }
+
+// modal para digitar código de barras manualmente (quando BarcodeDetector não suportado)
+function openManualCode() {
+  document.getElementById('notfound-title').textContent = 'Digite o código de barras ou nome:';
+  document.getElementById('manual-inp').value = '';
+  document.getElementById('manual-inp').placeholder = 'Ex: 7891234567890';
+  document.getElementById('manual-inp').inputMode = 'numeric';
+  document.getElementById('notfound-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('manual-inp').focus(), 200);
+}
+
+function addFoundItem() {
+  if (!foundName) return;
+  const id = Date.now();
+  items.push({id, name:foundName, price:0, qty:1, checked:false});
+  save(); render();
+  document.getElementById('found-overlay').classList.remove('open');
+  openNP(id); foundName=''; foundCode='';
+}
+function closeFound() { document.getElementById('found-overlay').classList.remove('open'); foundName=''; foundCode=''; }
+
+function addManualItem() {
+  const name = document.getElementById('manual-inp').value.trim();
+  if (!name) return;
+  // verifica se parece um código numérico — se sim, faz lookup
+  if (/^\d{8,14}$/.test(name)) {
+    document.getElementById('notfound-overlay').classList.remove('open');
+    lookupBarcode(name);
+    return;
+  }
+  const id = Date.now();
+  items.push({id, name, price:0, qty:1, checked:false});
+  save(); render();
+  document.getElementById('notfound-overlay').classList.remove('open');
+  openNP(id);
+}
+function closeNotFound() { document.getElementById('notfound-overlay').classList.remove('open'); }
+
+// NUMPAD preço
+function openNP(id) {
+  npId=id; const item=items.find(i=>i.id===id);
+  npRaw = item&&item.price>0 ? String(Math.round(item.price*100)) : '';
+  document.getElementById('np-title').textContent = 'Preço de "'+(item?item.name:'')+'"';
+  document.getElementById('np-disp').textContent = fmt(parseInt(npRaw||'0')/100);
+  document.getElementById('np-overlay').classList.add('open');
+}
+function closeNP() { document.getElementById('np-overlay').classList.remove('open'); npId=null; npRaw=''; }
+function npKey(k) { if(k==='del') npRaw=npRaw.slice(0,-1); else if(npRaw.length<8) npRaw+=k; document.getElementById('np-disp').textContent=fmt(parseInt(npRaw||'0')/100); }
+function npConfirm() { if(npId!==null){const item=items.find(i=>i.id===npId);if(item){item.price=parseInt(npRaw||'0')/100;save();}} closeNP(); render(); }
+
+// NUMPAD orçamento
+function openBudget() { bgRaw=budget>0?String(Math.round(budget*100)):''; document.getElementById('bg-disp').textContent=fmt(parseInt(bgRaw||'0')/100); document.getElementById('bg-overlay').classList.add('open'); }
+function closeBG() { document.getElementById('bg-overlay').classList.remove('open'); bgRaw=''; }
+function bgKey(k) { if(k==='del') bgRaw=bgRaw.slice(0,-1); else if(bgRaw.length<9) bgRaw+=k; document.getElementById('bg-disp').textContent=fmt(parseInt(bgRaw||'0')/100); }
+function bgConfirm() { budget=parseInt(bgRaw||'0')/100; save(); closeBG(); render(); }
+
+// QTY
+function openQty(id) { qtyId=id; const item=items.find(i=>i.id===id); qtyVal=item?item.qty:1; document.getElementById('qty-title').textContent='Quantidade — '+(item?item.name:''); document.getElementById('qty-num').textContent=qtyVal; document.getElementById('qty-overlay').classList.add('open'); }
+function closeQty() { document.getElementById('qty-overlay').classList.remove('open'); qtyId=null; }
+function qtyDelta(d) { qtyVal=Math.max(1,qtyVal+d); document.getElementById('qty-num').textContent=qtyVal; }
+function qtyConfirm() { if(qtyId!==null){const item=items.find(i=>i.id===qtyId);if(item){item.qty=qtyVal;save();}} closeQty(); render(); }
+
+// MENU
+function openMenu() { document.getElementById('menu-overlay').classList.add('open'); }
+function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
+function setFilter(f) { filter=f; render(); }
+function setSort(s) { sort=s; render(); }
+function clearAll() { document.getElementById('clear-overlay').classList.add('open'); }
+function clearConfirm() { items=[]; save(); render(); document.getElementById('clear-overlay').classList.remove('open'); }
+function clearCancel() { document.getElementById('clear-overlay').classList.remove('open'); }
+
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape'){closeNP();closeBG();closeQty();closeFound();closeNotFound();hideScanOverlay();}
+});
+
+render();
+</script>
+</body>
+</html>
