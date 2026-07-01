@@ -113,6 +113,17 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 </head>
 <body>
 
+<!-- BANNER INSTALAR -->
+<div id="install-banner" style="display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:92%;max-width:400px;background:#1e7a1e;color:#fff;border-radius:14px;padding:14px 16px;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,.3);flex-direction:row;align-items:center;gap:12px;">
+  <div style="font-size:32px">🛒</div>
+  <div style="flex:1">
+    <div style="font-weight:700;font-size:15px">Instalar GeraLista</div>
+    <div style="font-size:12px;opacity:.85;margin-top:2px">Adicione à tela inicial e use offline!</div>
+  </div>
+  <button onclick="doInstall()" style="background:#f5c800;color:#1a1a1a;border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer">Instalar</button>
+  <button onclick="dismissInstall()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:0 4px">✕</button>
+</div>
+
 <!-- SPLASH -->
 <div id="splash">
   <div class="sp-icon">🛒</div>
@@ -453,6 +464,30 @@ document.addEventListener('keydown', e => {
 });
 
 render();
+
+/* INSTALAR PWA */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // mostra banner após a splash sumir
+  setTimeout(() => {
+    const b = document.getElementById('install-banner');
+    b.style.display = 'flex';
+  }, 2800);
+});
+function doInstall() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null;
+    dismissInstall();
+  });
+}
+function dismissInstall() {
+  document.getElementById('install-banner').style.display = 'none';
+}
+window.addEventListener('appinstalled', () => dismissInstall());
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/Gera-lista/sw.js');
