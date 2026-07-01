@@ -37,7 +37,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 
 /* HEADER */
 .header { background:var(--green); color:#fff; padding:14px 16px 12px; position:sticky; top:0; z-index:50; }
-.header-title { text-align:center; font-size:17px; font-weight:700; margin-bottom:10px; }
+.header-title { text-align:center; font-size:17px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
+.header-title .caret { font-size:11px; opacity:.8; }
 .budget-bar { display:flex; background:rgba(0,0,0,.15); border-radius:10px; overflow:hidden; }
 .bcol { flex:1; padding:8px 6px; text-align:center; }
 .bcol+.bcol { border-left:1px solid rgba(255,255,255,.2); }
@@ -131,7 +132,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-title">🛒 GeraLista</div>
+  <div class="header-title" onclick="openListMenu()">🛒 <span id="current-list-name">GeraLista</span> <span class="caret">▾</span></div>
   <div class="budget-bar">
     <div class="bcol"><div class="bcol-label">Disponível</div><div class="bcol-val" id="h-disp">R$ 0,00</div></div>
     <div class="bcol"><div class="bcol-label">Gasto</div><div class="bcol-val warn" id="h-gasto">R$ 0,00</div></div>
@@ -244,6 +245,38 @@ Ovos"></textarea>
   </div>
 </div>
 
+<!-- MODAL LISTAS -->
+<div class="overlay bottom" id="listmenu-overlay" onclick="closeListMenu()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:75vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+    <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:6px 0 10px;text-align:center">Minhas Listas</div>
+    <div id="lists-container"></div>
+    <button onclick="openNewList()" style="width:100%;margin-top:10px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">+ Nova Lista</button>
+  </div>
+</div>
+
+<!-- MODAL NOVA LISTA -->
+<div class="overlay" id="newlist-overlay" onclick="closeNewList()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:16px;font-weight:600;color:#333" id="newlist-title">🆕 Nova Lista</div>
+    <input id="newlist-inp" type="text" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:15px;outline:none" placeholder="Ex: Mercado, Farmácia, Casa Nova…">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNewList()">Cancelar</button>
+      <button class="btn-ok" onclick="confirmNewList()">Salvar ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EXCLUIR LISTA -->
+<div class="overlay" id="dellist-overlay" onclick="closeDelList()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:15px;color:#333" id="dellist-title">Excluir esta lista e todos os seus produtos?</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDelList()">Não</button>
+      <button class="btn-ok" style="color:#ef4444" onclick="confirmDelList()">Sim, excluir</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL LIMPAR -->
 <div class="overlay" id="clear-overlay" onclick="clearCancel()">
   <div class="modal" onclick="event.stopPropagation()">
@@ -271,8 +304,33 @@ Ovos"></textarea>
 </div>
 
 <script>
-let items  = JSON.parse(localStorage.getItem('geralista_items')  || '[]');
-let budget = parseFloat(localStorage.getItem('geralista_budget') || '0');
+/* ── MULTI-LISTAS ── */
+function migrateOldData() {
+  // se existir dado antigo (formato único), migra para o novo formato de múltiplas listas
+  const oldItems = localStorage.getItem('geralista_items');
+  const hasNewFormat = localStorage.getItem('geralista_lists');
+  if (oldItems && !hasNewFormat) {
+    const oldBudget = localStorage.getItem('geralista_budget') || '0';
+    const lists = [{ id: 'list_1', name: 'GeraLista', items: JSON.parse(oldItems), budget: parseFloat(oldBudget) }];
+    localStorage.setItem('geralista_lists', JSON.stringify(lists));
+    localStorage.setItem('geralista_current', 'list_1');
+    localStorage.removeItem('geralista_items');
+    localStorage.removeItem('geralista_budget');
+  }
+}
+migrateOldData();
+
+let lists = JSON.parse(localStorage.getItem('geralista_lists') || 'null') || [
+  { id: 'list_1', name: 'GeraLista', items: [], budget: 0 }
+];
+let currentListId = localStorage.getItem('geralista_current') || lists[0].id;
+if (!lists.find(l => l.id === currentListId)) currentListId = lists[0].id;
+
+function getCurrentList() { return lists.find(l => l.id === currentListId); }
+
+let items = getCurrentList().items;
+let budget = getCurrentList().budget;
+let delListId = null;
 let filter = 'lista', sort = 'pad';
 let npRaw = '', npId = null;
 let bgRaw = '';
@@ -280,8 +338,11 @@ let qtyId = null, qtyVal = 1;
 let editId = null;
 
 const save = () => {
-  localStorage.setItem('geralista_items',  JSON.stringify(items));
-  localStorage.setItem('geralista_budget', String(budget));
+  const cur = getCurrentList();
+  cur.items = items;
+  cur.budget = budget;
+  localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  localStorage.setItem('geralista_current', currentListId);
 };
 const fmt = v => 'R$\u00a0' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const getTotal = () => items.reduce((s,i) => s + i.qty * i.price, 0);
@@ -297,6 +358,8 @@ window.addEventListener('load', () => {
 
 /* RENDER */
 function render() {
+  document.getElementById('current-list-name').textContent = getCurrentList().name;
+
   const total = getTotal(), saldo = budget - total;
   const pct = budget > 0 ? Math.min(total / budget * 100, 100) : 0;
 
@@ -493,6 +556,101 @@ function importList() {
     items.push({ id: Date.now() + Math.random(), name, price: 0, qty: 1, checked: false });
   });
   save(); closeImport(); render();
+}
+
+/* MULTI-LISTAS: gerenciamento */
+function openListMenu() {
+  renderListMenu();
+  document.getElementById('listmenu-overlay').classList.add('open');
+}
+function closeListMenu() { document.getElementById('listmenu-overlay').classList.remove('open'); }
+
+function renderListMenu() {
+  const c = document.getElementById('lists-container');
+  c.innerHTML = '';
+  lists.forEach(l => {
+    const t = l.items.reduce((s,i) => s + i.qty * i.price, 0);
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid #f0f0f0;cursor:pointer';
+    const isCurrent = l.id === currentListId;
+    row.innerHTML = `
+      <div style="flex:1" onclick="switchList('${l.id}')">
+        <div style="font-size:15px;font-weight:${isCurrent?'700':'500'};color:${isCurrent?'#1e7a1e':'#333'}">${isCurrent?'✓ ':''}${l.name}</div>
+        <div style="font-size:12px;color:#999;margin-top:2px">${l.items.length} ${l.items.length===1?'item':'itens'} · ${fmt(t)}</div>
+      </div>
+      <button onclick="event.stopPropagation();openRenameList('${l.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px">✏️</button>
+      ${lists.length > 1 ? `<button onclick="event.stopPropagation();openDelList('${l.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px;color:#c00">🗑️</button>` : ''}
+    `;
+    c.appendChild(row);
+  });
+}
+
+function switchList(id) {
+  currentListId = id;
+  const cur = getCurrentList();
+  items = cur.items;
+  budget = cur.budget;
+  localStorage.setItem('geralista_current', currentListId);
+  closeListMenu();
+  render();
+}
+
+let renameId = null;
+function openNewList() {
+  renameId = null;
+  document.getElementById('newlist-title').textContent = '🆕 Nova Lista';
+  document.getElementById('newlist-inp').value = '';
+  document.getElementById('newlist-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('newlist-inp').focus(), 200);
+}
+function openRenameList(id) {
+  renameId = id;
+  const l = lists.find(x => x.id === id);
+  document.getElementById('newlist-title').textContent = '✏️ Renomear Lista';
+  document.getElementById('newlist-inp').value = l ? l.name : '';
+  document.getElementById('newlist-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('newlist-inp').focus(), 200);
+}
+function closeNewList() { document.getElementById('newlist-overlay').classList.remove('open'); renameId = null; }
+function confirmNewList() {
+  const name = document.getElementById('newlist-inp').value.trim();
+  if (!name) return;
+  if (renameId) {
+    const l = lists.find(x => x.id === renameId);
+    if (l) l.name = name;
+  } else {
+    const id = 'list_' + Date.now();
+    lists.push({ id, name, items: [], budget: 0 });
+    currentListId = id;
+    items = [];
+    budget = 0;
+  }
+  localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  localStorage.setItem('geralista_current', currentListId);
+  closeNewList();
+  renderListMenu();
+  render();
+}
+
+function openDelList(id) {
+  delListId = id;
+  const l = lists.find(x => x.id === id);
+  document.getElementById('dellist-title').textContent = `Excluir a lista "${l ? l.name : ''}" e todos os seus produtos?`;
+  document.getElementById('dellist-overlay').classList.add('open');
+}
+function closeDelList() { document.getElementById('dellist-overlay').classList.remove('open'); delListId = null; }
+function confirmDelList() {
+  lists = lists.filter(l => l.id !== delListId);
+  if (currentListId === delListId) {
+    currentListId = lists[0].id;
+    items = getCurrentList().items;
+    budget = getCurrentList().budget;
+  }
+  localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  localStorage.setItem('geralista_current', currentListId);
+  closeDelList();
+  renderListMenu();
+  render();
 }
 
 /* MENU */
