@@ -1,22 +1,4 @@
-/* EXPORTAR */
-function exportList() {
-  let txt = '';
-  items.forEach(i => {
-    const status = i.checked ? '✓' : '';
-    txt += `${status} ${i.name}`;
-    if (i.price > 0) txt += ` - ${fmt(i.price)} (${i.qty}x)`;
-    txt += '\n';
-  });
-  
-  const total = getTotal();
-  const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
-  txt += `\n---\nTotal: ${fmt(total)} | Carrinho: ${fmt(cartTotal)}`;
-  
-  // Copia para clipboard
-  navigator.clipboard.writeText(txt).then(() => {
-    alert('✓ Lista copiada para compartilhar!');
-  });
-}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -135,17 +117,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 </head>
 <body>
 
-<!-- BANNER INSTALAR -->
-<div id="install-banner" style="display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:92%;max-width:400px;background:#1e7a1e;color:#fff;border-radius:14px;padding:14px 16px;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,.3);flex-direction:row;align-items:center;gap:12px;">
-  <div style="font-size:32px">🛒</div>
-  <div style="flex:1">
-    <div style="font-weight:700;font-size:15px">Instalar GeraLista</div>
-    <div style="font-size:12px;opacity:.85;margin-top:2px">Adicione à tela inicial e use offline!</div>
-  </div>
-  <button onclick="doInstall()" style="background:#f5c800;color:#1a1a1a;border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer">Instalar</button>
-  <button onclick="dismissInstall()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:0 4px">✕</button>
-</div>
-
 <!-- SPLASH -->
 <div id="splash">
   <div class="sp-icon">🛒</div>
@@ -181,6 +152,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   <div class="empty" id="empty">Lista vazia. Adicione um produto acima!</div>
 </div>
 
+<!-- FOOTER -->
 <div class="footer">
   <div class="footer-row">
     <div class="footer-col">
@@ -258,7 +230,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 <div class="overlay" id="import-overlay" onclick="closeImport()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" style="font-size:16px;font-weight:600;color:#333">📋 Importar lista</div>
-    <div style="font-size:12px;color:#888;margin-bottom:8px;text-align:center">Cole abaixo sua lista do WhatsApp.<br>Cada linha vira um produto.</div>
+    <div style="font-size:12px;color:#888;margin-bottom:8px;text-align:center">Cole abaixo sua lista do WhatsApp.<br>Cada linha ou vírgula vira um produto.</div>
     <textarea id="import-txt" style="width:100%;height:160px;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;resize:none;font-family:inherit" placeholder="Ex:
 Arroz 5kg
 Feijão
@@ -333,8 +305,9 @@ function render() {
   const se = document.getElementById('h-saldo');
   se.textContent = fmt(saldo);
   se.className = 'bcol-val ' + (saldo < 0 ? 'neg' : pct >= 80 ? 'warn' : 'ok');
+
   document.getElementById('total-list').textContent = fmt(total) + ' (' + items.length + ')';
-  
+
   const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
   const cartCount = items.filter(i => i.checked).length;
   document.getElementById('total-cart').textContent = fmt(cartTotal) + ' (' + cartCount + ')';
@@ -512,7 +485,6 @@ function openImport() {
 function closeImport() { document.getElementById('import-overlay').classList.remove('open'); }
 function importList() {
   const txt = document.getElementById('import-txt').value;
-  // Separa por linha OU vírgula
   let lines = txt.split(/[\n,]/)
     .map(l => l.replace(/[\u{1F300}-\u{1FFFF}]/gu, '').replace(/[•\-*✓]/g, '').trim())
     .filter(l => l.length > 1);
@@ -522,101 +494,6 @@ function importList() {
   });
   save(); closeImport(); render();
 }
-
-/* EXPORTAR */
-function exportList() {
-  let txt = 'GeraLista - Exportado em ' + new Date().toLocaleDateString('pt-BR') + '\n\n';
-  txt += '=== LISTA DE COMPRAS ===\n';
-  items.forEach(i => {
-    const status = i.checked ? '✓' : '○';
-    txt += `${status} ${i.name}\n`;
-    if (i.price > 0) txt += `  ${i.qty}x ${fmt(i.price)} = ${fmt(i.qty * i.price)}\n`;
-  });
-  txt += '\n=== RESUMO ===\n';
-  const total = getTotal();
-  const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
-  txt += `Total da lista: ${fmt(total)}\n`;
-  txt += `Carrinho (marcados): ${fmt(cartTotal)}\n`;
-  txt += `Orçamento: ${fmt(budget)}\n`;
-  txt += `Saldo: ${fmt(budget - total)}\n`;
-  
-  const blob = new Blob([txt], {type:'text/plain'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'geralista-' + Date.now() + '.txt';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* RELATÓRIO */
-function printReport() {
-  const total = getTotal();
-  const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
-  const data = new Date().toLocaleDateString('pt-BR');
-  const hora = new Date().toLocaleTimeString('pt-BR');
-  
-  let html = `
-    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;background:#fff">
-      <h2 style="text-align:center;color:#1e7a1e;margin-bottom:8px">GeraLista</h2>
-      <p style="text-align:center;color:#888;font-size:12px;margin-bottom:20px">${data} às ${hora}</p>
-      
-      <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
-        <tr style="background:#1e7a1e;color:#fff">
-          <th style="padding:10px;text-align:left;border:1px solid #ddd">Produto</th>
-          <th style="padding:10px;text-align:center;border:1px solid #ddd">Qtd</th>
-          <th style="padding:10px;text-align:right;border:1px solid #ddd">Valor</th>
-          <th style="padding:10px;text-align:right;border:1px solid #ddd">Total</th>
-          <th style="padding:10px;text-align:center;border:1px solid #ddd">Status</th>
-        </tr>
-  `;
-  
-  items.forEach(i => {
-    const bgColor = i.checked ? '#f0fdf4' : '#fff';
-    const status = i.checked ? '✓ Comprado' : '○ Pendente';
-    html += `
-      <tr style="background:${bgColor}">
-        <td style="padding:10px;border:1px solid #ddd;font-weight:500">${i.name}</td>
-        <td style="padding:10px;border:1px solid #ddd;text-align:center">${i.qty}</td>
-        <td style="padding:10px;border:1px solid #ddd;text-align:right;color:#dc2626">${fmt(i.price)}</td>
-        <td style="padding:10px;border:1px solid #ddd;text-align:right;font-weight:700;color:#1e7a1e">${fmt(i.qty * i.price)}</td>
-        <td style="padding:10px;border:1px solid #ddd;text-align:center;font-size:12px">${status}</td>
-      </tr>
-    `;
-  });
-  
-  html += `
-      </table>
-      
-      <div style="border-top:2px solid #1e7a1e;padding-top:16px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-          <span style="font-weight:700">Total da lista:</span>
-          <span style="font-weight:700;color:#1e7a1e">${fmt(total)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;background:#f0fdf4;padding:8px;border-radius:4px">
-          <span style="font-weight:700">Carrinho (comprado):</span>
-          <span style="font-weight:700;color:#f5c800">${fmt(cartTotal)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-          <span>Orçamento:</span>
-          <span>${fmt(budget)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;color:#1e7a1e;font-weight:700;font-size:16px">
-          <span>Saldo:</span>
-          <span>${fmt(budget - total)}</span>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  const reportDiv = document.getElementById('report-content');
-  reportDiv.innerHTML = html;
-  document.getElementById('report-overlay').classList.add('open');
-}
-
-function closeReport() { document.getElementById('report-overlay').classList.remove('open'); }
-
-window.addEventListener('afterprint', () => closeReport());
 
 /* MENU */
 function openMenu()  { document.getElementById('menu-overlay').classList.add('open'); }
@@ -628,7 +505,7 @@ function clearConfirm() { items = []; save(); render(); document.getElementById(
 function clearCancel()  { document.getElementById('clear-overlay').classList.remove('open'); }
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeNP(); closeBG(); closeQty(); closeEdit(); closeMenu(); }
+  if (e.key === 'Escape') { closeNP(); closeBG(); closeQty(); closeEdit(); closeMenu(); closeImport(); }
 });
 
 render();
@@ -638,24 +515,7 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  // mostra banner após a splash sumir
-  setTimeout(() => {
-    const b = document.getElementById('install-banner');
-    b.style.display = 'flex';
-  }, 2800);
 });
-function doInstall() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => {
-    deferredPrompt = null;
-    dismissInstall();
-  });
-}
-function dismissInstall() {
-  document.getElementById('install-banner').style.display = 'none';
-}
-window.addEventListener('appinstalled', () => dismissInstall());
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/Gera-lista/sw.js');
