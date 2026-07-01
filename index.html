@@ -1,4 +1,22 @@
-<!DOCTYPE html>
+/* EXPORTAR */
+function exportList() {
+  let txt = '';
+  items.forEach(i => {
+    const status = i.checked ? '✓' : '';
+    txt += `${status} ${i.name}`;
+    if (i.price > 0) txt += ` - ${fmt(i.price)} (${i.qty}x)`;
+    txt += '\n';
+  });
+  
+  const total = getTotal();
+  const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
+  txt += `\n---\nTotal: ${fmt(total)} | Carrinho: ${fmt(cartTotal)}`;
+  
+  // Copia para clipboard
+  navigator.clipboard.writeText(txt).then(() => {
+    alert('✓ Lista copiada para compartilhar!');
+  });
+}<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -46,17 +64,17 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .bcol-val.ok  { color:#b8f5b8; }
 .bcol-val.warn{ color:var(--yellow); }
 .bcol-val.neg { color:#fca5a5; }
-.btn-budget { background:rgba(0,0,0,.15); border:none; color:#fff; font-size:12px; padding:5px 10px; border-radius:6px; cursor:pointer; margin-top:8px; width:100%; }
+.btn-budget { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.35); color:#fff; font-size:12.5px; font-weight:600; padding:7px 10px; border-radius:8px; cursor:pointer; margin-top:8px; width:100%; }
 .progress-wrap { margin-top:8px; background:rgba(0,0,0,.2); border-radius:99px; height:5px; overflow:hidden; }
 .progress-fill { height:100%; border-radius:99px; background:var(--yellow); transition:width .3s,background .3s; }
 .progress-fill.warn  { background:#f97316; }
 .progress-fill.danger{ background:#ef4444; }
 
 /* ADD BAR */
-.add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; }
+.add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; position:sticky; top:0; z-index:45; }
 .add-bar input { flex:1; border:none; background:transparent; outline:none; font-size:15px; }
 .btn-add { background:var(--green); color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:15px; cursor:pointer; }
-.btn-dots { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; gap:4px; padding:6px; align-items:center; }
+.btn-dots { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; gap:4px; padding:6px; align-items:center; margin-left:10px; }
 .btn-dots span { width:4px; height:4px; background:#666; border-radius:50%; display:block; }
 
 /* LIST */
@@ -154,7 +172,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 
 <!-- ADD BAR -->
 <div class="add-bar">
-  <input id="add-inp" type="text" placeholder="Nome do produto…" onkeydown="if(event.key==='Enter')addItem()">
+  <input id="add-inp" type="text" placeholder="Adicionar um produto…" onkeydown="if(event.key==='Enter')addItem()">
   <button class="btn-add" onclick="addItem()">+</button>
   <button class="btn-dots" onclick="openMenu()"><span></span><span></span><span></span></button>
 </div>
@@ -236,18 +254,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
-<!-- MODAL RELATÓRIO -->
-<div class="overlay" id="report-overlay" onclick="closeReport()">
-  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px;max-height:70vh;overflow-y:auto">
-    <div class="modal-title" style="font-size:16px;font-weight:600;color:#333">🖨️ Relatório da Lista</div>
-    <div id="report-content" style="font-size:14px;color:#555;line-height:1.6"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeReport()">Fechar</button>
-      <button class="btn-ok" onclick="printReport()">🖨️ Imprimir</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL IMPORTAR -->
 <div class="overlay" id="import-overlay" onclick="closeImport()">
   <div class="modal" onclick="event.stopPropagation()">
@@ -287,9 +293,7 @@ Ovos"></textarea>
     <div onclick="setSort('pad');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem padrão</div>
     <div onclick="setSort('az');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (A → Z)</div>
     <div onclick="setSort('za');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (Z → A)</div>
-    <div onclick="exportList();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📥 Exportar lista</div>
     <div onclick="openImport();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📋 Importar lista</div>
-    <div onclick="printReport();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">🖨️ Gerar relatório</div>
     <div onclick="clearAll();closeMenu()" style="padding:14px 0;font-size:15px;cursor:pointer;color:#c00">Limpar lista e cesta de compras</div>
   </div>
 </div>
@@ -329,10 +333,11 @@ function render() {
   const se = document.getElementById('h-saldo');
   se.textContent = fmt(saldo);
   se.className = 'bcol-val ' + (saldo < 0 ? 'neg' : pct >= 80 ? 'warn' : 'ok');
-  document.getElementById('total-list').textContent = fmt(total);
+  document.getElementById('total-list').textContent = fmt(total) + ' (' + items.length + ')';
   
   const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
-  document.getElementById('total-cart').textContent = fmt(cartTotal);
+  const cartCount = items.filter(i => i.checked).length;
+  document.getElementById('total-cart').textContent = fmt(cartTotal) + ' (' + cartCount + ')';
 
   const prog = document.getElementById('prog');
   prog.style.width = pct + '%';
