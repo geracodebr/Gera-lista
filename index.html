@@ -224,6 +224,24 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
+<!-- MODAL IMPORTAR -->
+<div class="overlay" id="import-overlay" onclick="closeImport()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:16px;font-weight:600;color:#333">📋 Importar lista</div>
+    <div style="font-size:12px;color:#888;margin-bottom:8px;text-align:center">Cole abaixo sua lista do WhatsApp.<br>Cada linha vira um produto.</div>
+    <textarea id="import-txt" style="width:100%;height:160px;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;resize:none;font-family:inherit" placeholder="Ex:
+Arroz 5kg
+Feijão
+Leite integral
+Ovos"></textarea>
+    <div style="font-size:11px;color:#aaa;margin-top:4px">Linhas em branco e emojis são ignorados automaticamente.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeImport()">Cancelar</button>
+      <button class="btn-ok" onclick="importList()">Importar ✓</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL LIMPAR -->
 <div class="overlay" id="clear-overlay" onclick="clearCancel()">
   <div class="modal" onclick="event.stopPropagation()">
@@ -245,6 +263,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     <div onclick="setSort('pad');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem padrão</div>
     <div onclick="setSort('az');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (A → Z)</div>
     <div onclick="setSort('za');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (Z → A)</div>
+    <div onclick="openImport();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📋 Importar lista (colar do WhatsApp)</div>
     <div onclick="clearAll();closeMenu()" style="padding:14px 0;font-size:15px;cursor:pointer;color:#c00">Limpar lista e cesta de compras</div>
   </div>
 </div>
@@ -448,6 +467,25 @@ function editConfirm() {
   const item = items.find(i => i.id === editId);
   if (item) { item.name = name; save(); }
   closeEdit(); render();
+}
+
+/* IMPORTAR */
+function openImport() {
+  document.getElementById('import-txt').value = '';
+  document.getElementById('import-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('import-txt').focus(), 200);
+}
+function closeImport() { document.getElementById('import-overlay').classList.remove('open'); }
+function importList() {
+  const txt = document.getElementById('import-txt').value;
+  const lines = txt.split('\n')
+    .map(l => l.replace(/[\u{1F300}-\u{1FFFF}]/gu, '').replace(/[•\-*]/g, '').trim())
+    .filter(l => l.length > 1);
+  if (!lines.length) return;
+  lines.forEach(name => {
+    items.push({ id: Date.now() + Math.random(), name, price: 0, qty: 1, checked: false });
+  });
+  save(); closeImport(); render();
 }
 
 /* MENU */
