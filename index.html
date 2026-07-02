@@ -320,6 +320,17 @@ Ovos"></textarea>
   </div>
 </div>
 
+<!-- MODAL CONFIRMAR EXCLUSÃO ITEM -->
+<div class="overlay" id="delitem-overlay" onclick="closeDelItem()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:15px;color:#333" id="delitem-title">Remover este produto da lista?</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDelItem()">Não</button>
+      <button class="btn-ok" style="color:#ef4444" onclick="confirmDelItem()">Sim, remover</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL MOVER ITEM -->
 <div class="overlay bottom" id="move-overlay" onclick="closeMove()">
   <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:65vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
@@ -547,7 +558,7 @@ function render() {
 
     const rm = document.createElement('button');
     rm.className = 'btn-rm'; rm.textContent = '✕';
-    rm.onclick = () => { items = items.filter(i => i.id !== item.id); save(); render(); };
+    rm.onclick = () => openDelItem(item.id);
 
     const mv = document.createElement('button');
     mv.className = 'btn-rm'; mv.textContent = '📦'; mv.style.fontSize = '15px';
@@ -750,6 +761,22 @@ function confirmDelList() {
   localStorage.setItem('geralista_current', currentListId);
   closeDelList();
   renderListMenu();
+  render();
+}
+
+/* EXCLUIR ITEM (com confirmação) */
+let delItemId = null;
+function openDelItem(id) {
+  delItemId = id;
+  const item = items.find(i => i.id === id);
+  document.getElementById('delitem-title').textContent = `Remover "${item ? item.name : ''}" da lista?`;
+  document.getElementById('delitem-overlay').classList.add('open');
+}
+function closeDelItem() { document.getElementById('delitem-overlay').classList.remove('open'); delItemId = null; }
+function confirmDelItem() {
+  items = items.filter(i => i.id !== delItemId);
+  save();
+  closeDelItem();
   render();
 }
 
