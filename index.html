@@ -83,7 +83,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 
 /* FOOTER */
 .footer { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:var(--green); color:#fff; z-index:40; }
-.footer-row { display:flex; }
+.footer-row { display:flex; align-items:center; }
 .footer-col { flex:1; padding:12px 16px; display:flex; flex-direction:column; gap:2px; }
 .footer-col+.footer-col { border-left:1px solid rgba(255,255,255,.2); }
 .footer-label { font-size:11px; opacity:.75; text-transform:uppercase; letter-spacing:.05em; }
@@ -113,7 +113,27 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .btn-qm { width:48px; height:48px; border:2px solid var(--green); border-radius:50%; background:none; color:var(--green); font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .qty-num { font-size:24px; font-weight:700; min-width:60px; text-align:center; }
 
-@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }/* NOVA TELA - ADICIONAR PRODUTO */
+.newitem-screen { position:fixed; inset:0; background:var(--cream); z-index:500; display:none; flex-direction:column; max-width:430px; margin:0 auto; }
+.newitem-screen.open { display:flex; }
+.ni-header { background:var(--green); color:#fff; padding:14px 16px; display:flex; align-items:center; gap:14px; }
+.ni-header button { background:none; border:none; color:#fff; font-size:22px; cursor:pointer; padding:4px; }
+.ni-header .ni-title { flex:1; font-size:17px; font-weight:700; }
+.ni-body { flex:1; overflow-y:auto; padding:20px; }
+.ni-field { margin-bottom:20px; }
+.ni-label { font-size:12px; color:#1e7a1e; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.ni-input { width:100%; border:none; border-bottom:2px solid #ddd; padding:10px 2px; font-size:17px; outline:none; background:transparent; }
+.ni-input:focus { border-color:var(--green); }
+.ni-row { display:flex; gap:16px; }
+.ni-row .ni-field { flex:1; }
+.unit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:4px; max-width:180px; }
+.unit-btn { padding:10px 4px; text-align:center; border:1.5px solid #ddd; border-radius:8px; background:#fff; font-size:13px; font-weight:600; cursor:pointer; color:#555; }
+.unit-btn.active { border-color:var(--green); background:#f0fdf4; color:var(--green); }
+.ni-preview { background:#f0fdf4; border-radius:10px; padding:14px; margin-top:8px; text-align:center; }
+.ni-preview-label { font-size:11px; color:#888; text-transform:uppercase; }
+.ni-preview-val { font-size:20px; font-weight:800; color:var(--green); margin-top:2px; }
+.ni-save { background:var(--green); color:#fff; border:none; border-radius:10px; padding:14px; font-size:16px; font-weight:700; cursor:pointer; width:100%; margin-top:8px; }
+.fab-add { position:fixed; bottom:90px; right:18px; width:58px; height:58px; border-radius:50%; background:var(--green); color:#fff; border:none; font-size:28px; box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; z-index:60; display:flex; align-items:center; justify-content:center; }
 </style>
 </head>
 <body>
@@ -142,15 +162,57 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   <div class="progress-wrap"><div class="progress-fill" id="prog" style="width:0%"></div></div>
 </div>
 
-<!-- ADD BAR -->
+<!-- ADD BAR (agora só busca) -->
 <div class="add-bar">
-  <input id="add-inp" type="text" placeholder="Adicionar um produto…" onkeydown="if(event.key==='Enter')addItem()">
-  <button class="btn-add" onclick="addItem()">+</button>
-  <button class="btn-dots" onclick="openMenu()"><span></span><span></span><span></span></button>
+  <input id="add-inp" type="text" placeholder="🔍 Pesquisar produto…" onkeydown="if(event.key==='Enter')searchItem()" oninput="if(!this.value)clearSearch()">
 </div>
 
 <div class="list-area" id="list">
-  <div class="empty" id="empty">Lista vazia. Adicione um produto acima!</div>
+  <div class="empty" id="empty">Lista vazia. Toque no botão + para adicionar!</div>
+</div>
+
+<!-- BOTÃO FLUTUANTE -->
+<button class="fab-add" onclick="openNewItemScreen()">+</button>
+
+<!-- TELA NOVO PRODUTO -->
+<div class="newitem-screen" id="newitem-screen">
+  <div class="ni-header">
+    <button onclick="closeNewItemScreen()">←</button>
+    <div class="ni-title">Novo Produto</div>
+    <button onclick="saveNewItem()">✓</button>
+  </div>
+  <div class="ni-body">
+    <div class="ni-field">
+      <div class="ni-label">Nome do produto</div>
+      <input id="ni-name" class="ni-input" type="text" placeholder="Ex: Arroz, Leite, Sabonete…" autofocus>
+    </div>
+
+    <div class="ni-row">
+      <div class="ni-field">
+        <div class="ni-label">Quantidade</div>
+        <input id="ni-qty" class="ni-input" type="number" inputmode="decimal" value="1" min="0" step="any">
+      </div>
+      <div class="ni-field">
+        <div class="ni-label">Preço unitário</div>
+        <input id="ni-price" class="ni-input" type="text" inputmode="numeric" placeholder="R$ 0,00">
+      </div>
+    </div>
+
+    <div class="ni-field">
+      <div class="ni-label">Unidade de medida</div>
+      <div class="unit-grid" id="unit-grid">
+        <div class="unit-btn active" data-unit="un" onclick="selectUnit('un')">un</div>
+        <div class="unit-btn" data-unit="kg" onclick="selectUnit('kg')">kg</div>
+      </div>
+    </div>
+
+    <div class="ni-preview">
+      <div class="ni-preview-label">Subtotal deste produto</div>
+      <div class="ni-preview-val" id="ni-preview-val">R$ 0,00</div>
+    </div>
+
+    <button class="ni-save" onclick="saveNewItem()">Adicionar à lista ✓</button>
+  </div>
 </div>
 
 <!-- FOOTER -->
@@ -164,6 +226,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
       <div class="footer-label">🛒 Carrinho</div>
       <div class="footer-val carrinho" id="total-cart">R$ 0,00</div>
     </div>
+    <button class="btn-dots" onclick="openMenu()" style="padding:0 16px;margin-left:0"><span style="background:#fff"></span><span style="background:#fff"></span><span style="background:#fff"></span></button>
   </div>
 </div>
 
@@ -432,6 +495,8 @@ Ovos"></textarea>
     <div onclick="setSort('pad');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem padrão</div>
     <div onclick="setSort('az');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (A → Z)</div>
     <div onclick="setSort('za');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (Z → A)</div>
+    <div onclick="setSort('semPrecoTop');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">💲 Sem preço primeiro</div>
+    <div onclick="setSort('semPrecoBottom');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">💲 Sem preço por último</div>
     <div onclick="openImport();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📋 Importar lista</div>
     <div onclick="openInstallHelp();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📲 Instalar app no celular</div>
     <div onclick="openAbout();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">ℹ️ Sobre / Contato</div>
@@ -529,10 +594,13 @@ function render() {
   document.getElementById('m-todos').textContent = items.length;
 
   let visible = [...items];
+  if (searchTerm) visible = visible.filter(i => i.name.toLowerCase().includes(searchTerm));
   if (filter === 'cesta') visible = visible.filter(i => i.checked);
   else if (filter === 'lista') visible = visible.filter(i => !i.checked);
   if (sort === 'az') visible.sort((a,b) => a.name.localeCompare(b.name));
   else if (sort === 'za') visible.sort((a,b) => b.name.localeCompare(a.name));
+  else if (sort === 'semPrecoTop') visible.sort((a,b) => (a.price>0?1:0) - (b.price>0?1:0));
+  else if (sort === 'semPrecoBottom') visible.sort((a,b) => (b.price>0?1:0) - (a.price>0?1:0));
 
   const list = document.getElementById('list');
   list.querySelectorAll('.item').forEach(el => el.remove());
@@ -561,8 +629,9 @@ function render() {
 
     const sub = document.createElement('div');
     sub.className = 'item-sub';
+    const unitLabel = item.unit && item.unit !== 'un' ? item.unit : 'x';
     if (item.price > 0) {
-      sub.innerHTML = item.qty + 'x ' + fmt(item.price) +
+      sub.innerHTML = item.qty + unitLabel + ' ' + fmt(item.price) +
         ' <span style="color:#1e7a1e;font-weight:700">= ' + fmt(subtotal) + '</span>';
     } else {
       sub.textContent = 'Toque no preço para informar';
@@ -585,7 +654,7 @@ function render() {
     bm.onclick = () => { if (item.qty > 1) { item.qty--; save(); render(); } };
 
     const ql = document.createElement('div');
-    ql.className = 'qty-lbl'; ql.textContent = item.qty + 'x';
+    ql.className = 'qty-lbl'; ql.textContent = item.qty + (item.unit && item.unit !== 'un' ? item.unit : 'x');
     ql.onclick = () => openQty(item.id);
 
     const bp = document.createElement('button');
@@ -609,14 +678,63 @@ function render() {
   });
 }
 
-/* ADICIONAR */
-function addItem() {
-  const inp = document.getElementById('add-inp');
-  const name = inp.value.trim();
-  if (!name) return;
+/* BUSCAR PRODUTO NA LISTA */
+let searchTerm = '';
+function searchItem() {
+  searchTerm = document.getElementById('add-inp').value.trim().toLowerCase();
+  render();
+}
+function clearSearch() {
+  searchTerm = '';
+  render();
+}
+
+/* NOVA TELA - ADICIONAR PRODUTO */
+let selectedUnit = 'un';
+function openNewItemScreen() {
+  document.getElementById('ni-name').value = '';
+  document.getElementById('ni-qty').value = '1';
+  document.getElementById('ni-price').value = '';
+  selectedUnit = 'un';
+  document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === 'un'));
+  updateNiPreview();
+  document.getElementById('newitem-screen').classList.add('open');
+  setTimeout(() => document.getElementById('ni-name').focus(), 200);
+}
+function closeNewItemScreen() { document.getElementById('newitem-screen').classList.remove('open'); }
+function selectUnit(u) {
+  selectedUnit = u;
+  document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === u));
+  updateNiPreview();
+}
+function parsePriceInput(v) {
+  const digits = (v || '').replace(/\D/g, '');
+  return digits ? parseInt(digits) / 100 : 0;
+}
+function formatPriceField(input) {
+  const digits = input.value.replace(/\D/g, '');
+  const val = digits ? parseInt(digits) / 100 : 0;
+  input.value = digits ? val.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '';
+}
+function updateNiPreview() {
+  const qty = parseFloat(document.getElementById('ni-qty').value) || 0;
+  const price = parsePriceInput(document.getElementById('ni-price').value);
+  document.getElementById('ni-preview-val').textContent = fmt(qty * price);
+}
+document.addEventListener('input', e => {
+  if (e.target && e.target.id === 'ni-price') { formatPriceField(e.target); updateNiPreview(); }
+  else if (e.target && e.target.id === 'ni-qty') { updateNiPreview(); }
+});
+function saveNewItem() {
+  const name = document.getElementById('ni-name').value.trim();
+  if (!name) { document.getElementById('ni-name').focus(); return; }
+  const qty = parseFloat(document.getElementById('ni-qty').value) || 1;
+  const price = parsePriceInput(document.getElementById('ni-price').value);
   const id = Date.now();
-  items.push({ id, name, price: 0, qty: 1, checked: false });
-  save(); inp.value = ''; render(); openNP(id);
+  items.push({ id, name, price, qty, unit: selectedUnit, checked: false });
+  save();
+  closeNewItemScreen();
+  render();
 }
 
 /* NUMPAD PREÇO */
