@@ -21,12 +21,7 @@
 }
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
 
-/* SPLASH */
-#splash {
-  position:fixed; inset:0; background:var(--green); z-index:9999;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:12px; transition:opacity .6s ease;
-}
+#splash { position:fixed; inset:0; background:var(--green); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; transition:opacity .6s ease; }
 #splash .sp-icon { font-size:72px; }
 #splash .sp-title { color:#fff; font-size:30px; font-weight:900; letter-spacing:1px; }
 #splash .sp-sub { color:var(--yellow); font-size:13px; letter-spacing:3px; text-transform:uppercase; }
@@ -35,7 +30,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 #splash .sp-name { color:#fff; font-size:15px; font-weight:700; letter-spacing:1px; }
 #splash .sp-copy { color:rgba(255,255,255,.4); font-size:10px; margin-top:4px; }
 
-/* HEADER */
 .header { background:var(--green); color:#fff; padding:14px 16px 12px; position:sticky; top:0; z-index:50; }
 .header-title { text-align:center; font-size:17px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
 .header-title .caret { font-size:11px; opacity:.8; }
@@ -48,49 +42,41 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .bcol-val.warn{ color:var(--yellow); }
 .bcol-val.neg { color:#fca5a5; }
 .btn-budget { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.35); color:#fff; font-size:12.5px; font-weight:600; padding:7px 10px; border-radius:8px; cursor:pointer; margin-top:8px; width:100%; }
+.budget-toggle { text-align:center; margin-top:6px; }
+.budget-toggle span { font-size:11px; color:rgba(255,255,255,.75); text-decoration:underline; cursor:pointer; }
 .progress-wrap { margin-top:8px; background:rgba(0,0,0,.2); border-radius:99px; height:5px; overflow:hidden; }
 .progress-fill { height:100%; border-radius:99px; background:var(--yellow); transition:width .3s,background .3s; }
 .progress-fill.warn  { background:#f97316; }
 .progress-fill.danger{ background:#ef4444; }
 
-/* ADD BAR */
 .add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; position:sticky; top:0; z-index:45; }
 .add-bar input { flex:1; border:none; background:transparent; outline:none; font-size:15px; }
-.btn-add { background:var(--green); color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:15px; cursor:pointer; }
-.btn-dots { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; gap:4px; padding:6px; align-items:center; margin-left:10px; }
-.btn-dots span { width:4px; height:4px; background:#666; border-radius:50%; display:block; }
 
-/* LIST */
 .list-area { flex:1; overflow-y:auto; padding-bottom:80px; }
-.item { background:var(--cream); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; }
+.item { background:var(--cream); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:12px; gap:10px; }
 .item.done { opacity:.45; }
 .item.done .item-name { text-decoration:line-through; }
-.chk { width:22px; height:22px; border:2px solid #aaa; border-radius:4px; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#fff; }
+.item-mid { flex:1; min-width:0; cursor:pointer; }
+.item-name { font-size:15.5px; font-weight:500; white-space:normal; word-break:break-word; user-select:none; line-height:1.3; color:#222; }
+.item-sub { font-size:13.5px; color:#777; margin-top:3px; }
+.item-sub b { color:#1e7a1e; font-weight:700; }
+.chk { width:24px; height:24px; border:2px solid #bbb; border-radius:5px; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#fff; }
 .chk.on { background:var(--green); border-color:var(--green); }
-.chk.on::after { content:'✓'; font-size:13px; font-weight:700; color:#fff; }
-.item-mid { flex:1; min-width:0; }
-.item-name { font-size:15px; white-space:normal; word-break:break-word; user-select:none; line-height:1.3; }
-.item-sub { font-size:12px; color:#888; margin-top:2px; }
-.item-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.item-price { color:var(--red); font-size:14px; font-weight:600; cursor:pointer; padding:2px 8px; border:1px dashed #f0a0a0; border-radius:4px; background:#fff5f5; white-space:nowrap; }
-.item-qty-row { display:flex; align-items:center; gap:5px; }
-.btn-q { width:28px; height:28px; border:none; border-radius:50%; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
-.btn-q.minus { background:#ef4444; }
-.btn-q.plus  { background:var(--green); }
-.qty-lbl { font-size:13px; color:#555; min-width:28px; text-align:center; cursor:pointer; }
-.btn-rm { background:none; border:none; cursor:pointer; color:#bbb; font-size:18px; padding:2px; }
+.chk.on::after { content:'✓'; font-size:14px; font-weight:700; color:#fff; }
 .empty { text-align:center; padding:3rem 1rem; color:#aaa; font-size:14px; }
 
-/* FOOTER */
+.fab-add { position:fixed; bottom:90px; right:18px; width:58px; height:58px; border-radius:50%; background:var(--green); color:#fff; border:none; font-size:28px; box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; z-index:60; display:flex; align-items:center; justify-content:center; }
+
 .footer { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:var(--green); color:#fff; z-index:40; }
-.footer-row { display:flex; align-items:center; }
+.footer-row { display:flex; align-items:stretch; }
 .footer-col { flex:1; padding:12px 16px; display:flex; flex-direction:column; gap:2px; }
 .footer-col+.footer-col { border-left:1px solid rgba(255,255,255,.2); }
 .footer-label { font-size:11px; opacity:.75; text-transform:uppercase; letter-spacing:.05em; }
 .footer-val { font-size:17px; font-weight:700; }
 .footer-val.carrinho { color:var(--yellow); }
+.btn-dots { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; gap:4px; align-items:center; justify-content:center; padding:0 16px; }
+.btn-dots span { width:4px; height:4px; background:#fff; border-radius:50%; display:block; }
 
-/* OVERLAYS */
 .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; align-items:center; justify-content:center; }
 .overlay.open { display:flex; }
 .overlay.bottom { align-items:flex-end; justify-content:center; }
@@ -100,7 +86,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .btn-cancel { background:none; border:none; color:#888; font-size:15px; font-weight:600; cursor:pointer; padding:8px; }
 .btn-ok { background:none; border:none; color:var(--green); font-size:15px; font-weight:700; cursor:pointer; padding:8px; }
 
-/* NUMPAD */
 .np-display { font-size:28px; font-weight:700; text-align:center; padding:12px; border:1.5px solid #ddd; border-radius:8px; margin-bottom:14px; background:#fafafa; min-height:54px; display:flex; align-items:center; justify-content:center; }
 .np-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
 .np-btn { padding:16px; font-size:20px; font-weight:500; border:none; border-radius:10px; background:#f4f4f4; cursor:pointer; }
@@ -108,12 +93,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .np-btn.del { background:#ef4444; color:#fff; }
 .np-btn.ok  { background:var(--green); color:#fff; font-size:18px; }
 
-/* QTY */
-.qty-row { display:flex; align-items:center; justify-content:center; gap:24px; margin:16px 0; }
-.btn-qm { width:48px; height:48px; border:2px solid var(--green); border-radius:50%; background:none; color:var(--green); font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.qty-num { font-size:24px; font-weight:700; min-width:60px; text-align:center; }
-
-@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }/* NOVA TELA - ADICIONAR PRODUTO */
 .newitem-screen { position:fixed; inset:0; background:var(--cream); z-index:500; display:none; flex-direction:column; max-width:430px; margin:0 auto; }
 .newitem-screen.open { display:flex; }
 .ni-header { background:var(--green); color:#fff; padding:14px 16px; display:flex; align-items:center; gap:14px; }
@@ -126,19 +105,19 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .ni-input:focus { border-color:var(--green); }
 .ni-row { display:flex; gap:16px; }
 .ni-row .ni-field { flex:1; }
-.unit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:4px; max-width:180px; }
+.unit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:4px; max-width:220px; }
 .unit-btn { padding:10px 4px; text-align:center; border:1.5px solid #ddd; border-radius:8px; background:#fff; font-size:13px; font-weight:600; cursor:pointer; color:#555; }
 .unit-btn.active { border-color:var(--green); background:#f0fdf4; color:var(--green); }
 .ni-preview { background:#f0fdf4; border-radius:10px; padding:14px; margin-top:8px; text-align:center; }
 .ni-preview-label { font-size:11px; color:#888; text-transform:uppercase; }
 .ni-preview-val { font-size:20px; font-weight:800; color:var(--green); margin-top:2px; }
 .ni-save { background:var(--green); color:#fff; border:none; border-radius:10px; padding:14px; font-size:16px; font-weight:700; cursor:pointer; width:100%; margin-top:8px; }
-.fab-add { position:fixed; bottom:90px; right:18px; width:58px; height:58px; border-radius:50%; background:var(--green); color:#fff; border:none; font-size:28px; box-shadow:0 4px 14px rgba(0,0,0,.3); cursor:pointer; z-index:60; display:flex; align-items:center; justify-content:center; }
+
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="sp-icon">🛒</div>
   <div class="sp-title">GeraLista</div>
@@ -150,7 +129,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-title" onclick="openListMenu()">🛒 <span id="current-list-name">GeraLista</span> <span class="caret">▾</span></div>
   <div class="budget-bar">
@@ -158,33 +136,45 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     <div class="bcol"><div class="bcol-label">Gasto</div><div class="bcol-val warn" id="h-gasto">R$ 0,00</div></div>
     <div class="bcol"><div class="bcol-label">Saldo</div><div class="bcol-val ok" id="h-saldo">R$ 0,00</div></div>
   </div>
-  <button class="btn-budget" onclick="openBudget()">✏️ Definir orçamento geral (todas as listas)</button>
+  <button class="btn-budget" onclick="openBudget()" id="btn-budget-label">✏️ Definir orçamento geral (todas as listas)</button>
+  <div class="budget-toggle"><span onclick="toggleBudgetMode()">Trocar para orçamento individual desta lista</span></div>
   <div class="progress-wrap"><div class="progress-fill" id="prog" style="width:0%"></div></div>
 </div>
 
-<!-- ADD BAR (agora só busca) -->
 <div class="add-bar">
-  <input id="add-inp" type="text" placeholder="🔍 Pesquisar produto…" onkeydown="if(event.key==='Enter')searchItem()" oninput="if(!this.value)clearSearch()">
+  <input id="search-inp" type="text" placeholder="🔎 Pesquisar produto…" onkeydown="if(event.key==='Enter')doSearch()" oninput="if(!this.value)doSearch()">
 </div>
 
 <div class="list-area" id="list">
   <div class="empty" id="empty">Lista vazia. Toque no botão + para adicionar!</div>
 </div>
 
-<!-- BOTÃO FLUTUANTE -->
 <button class="fab-add" onclick="openNewItemScreen()">+</button>
 
-<!-- TELA NOVO PRODUTO -->
+<div class="footer">
+  <div class="footer-row">
+    <div class="footer-col">
+      <div class="footer-label">📋 Total</div>
+      <div class="footer-val" id="total-list">R$ 0,00</div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-label">🛒 Carrinho</div>
+      <div class="footer-val carrinho" id="total-cart">R$ 0,00</div>
+    </div>
+    <button class="btn-dots" onclick="openMenu()"><span></span><span></span><span></span></button>
+  </div>
+</div>
+
 <div class="newitem-screen" id="newitem-screen">
   <div class="ni-header">
     <button onclick="closeNewItemScreen()">←</button>
-    <div class="ni-title">Novo Produto</div>
+    <div class="ni-title" id="ni-screen-title">Novo Produto</div>
     <button onclick="saveNewItem()">✓</button>
   </div>
   <div class="ni-body">
     <div class="ni-field">
       <div class="ni-label">Nome do produto</div>
-      <input id="ni-name" class="ni-input" type="text" placeholder="Ex: Arroz, Leite, Sabonete…" autofocus>
+      <input id="ni-name" class="ni-input" type="text" placeholder="Ex: Arroz, Leite, Sabonete…">
     </div>
 
     <div class="ni-row">
@@ -206,31 +196,20 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
       </div>
     </div>
 
+    <div class="ni-field" style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border-radius:10px;padding:12px 14px;margin-bottom:16px">
+      <input type="checkbox" id="ni-cart" style="width:20px;height:20px;accent-color:#1e7a1e">
+      <label for="ni-cart" style="font-size:14px;font-weight:600;color:#1e7a1e;cursor:pointer">🛒 Inserir no carrinho (marcar como comprado)</label>
+    </div>
+
     <div class="ni-preview">
       <div class="ni-preview-label">Subtotal deste produto</div>
       <div class="ni-preview-val" id="ni-preview-val">R$ 0,00</div>
     </div>
 
-    <button class="ni-save" onclick="saveNewItem()">Adicionar à lista ✓</button>
+    <button class="ni-save" onclick="saveNewItem()">Salvar ✓</button>
   </div>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-  <div class="footer-row">
-    <div class="footer-col">
-      <div class="footer-label">📋 Total</div>
-      <div class="footer-val" id="total-list">R$ 0,00</div>
-    </div>
-    <div class="footer-col">
-      <div class="footer-label">🛒 Carrinho</div>
-      <div class="footer-val carrinho" id="total-cart">R$ 0,00</div>
-    </div>
-    <button class="btn-dots" onclick="openMenu()" style="padding:0 16px;margin-left:0"><span style="background:#fff"></span><span style="background:#fff"></span><span style="background:#fff"></span></button>
-  </div>
-</div>
-
-<!-- NUMPAD PREÇO -->
 <div class="overlay" id="np-overlay" onclick="closeNP()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="np-title">Preço unitário</div>
@@ -246,10 +225,9 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
-<!-- NUMPAD ORÇAMENTO -->
 <div class="overlay" id="bg-overlay" onclick="closeBG()">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">💰 Quanto você tem disponível?</div>
+    <div class="modal-title" id="bg-title">💰 Quanto você tem disponível?</div>
     <div class="np-display" id="bg-disp">R$ 0,00</div>
     <div class="np-grid">
       <button class="np-btn" onclick="bgKey('7')">7</button><button class="np-btn" onclick="bgKey('8')">8</button><button class="np-btn" onclick="bgKey('9')">9</button>
@@ -262,23 +240,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
-<!-- MODAL QUANTIDADE -->
-<div class="overlay" id="qty-overlay" onclick="closeQty()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="qty-title">Quantidade</div>
-    <div class="qty-row">
-      <button class="btn-qm" onclick="qtyDelta(-1)">−</button>
-      <div class="qty-num" id="qty-num">1</div>
-      <button class="btn-qm" onclick="qtyDelta(1)">+</button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeQty()">Cancelar</button>
-      <button class="btn-ok" onclick="qtyConfirm()">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL EDITAR NOME -->
 <div class="overlay" id="edit-overlay" onclick="closeEdit()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" style="font-size:16px;font-weight:600;color:#333">✏️ Editar nome do produto</div>
@@ -290,7 +251,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
-<!-- MODAL IMPORTAR -->
 <div class="overlay" id="import-overlay" onclick="closeImport()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" style="font-size:16px;font-weight:600;color:#333">📋 Importar lista</div>
@@ -308,7 +268,98 @@ Ovos"></textarea>
   </div>
 </div>
 
-<!-- MODAL SOBRE MIM -->
+<div class="overlay" id="install-overlay" onclick="closeInstallHelp()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px;max-height:78vh;overflow-y:auto">
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:38px;margin-bottom:4px">📲</div>
+      <div style="font-size:17px;font-weight:800;color:#1e7a1e">Instalar o GeraLista</div>
+      <div style="font-size:12px;color:#999;margin-top:2px">Escolha seu navegador abaixo</div>
+    </div>
+    <div id="install-native" style="display:none;margin-bottom:16px">
+      <button onclick="doInstall()" style="width:100%;background:#1e7a1e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">⬇️ Instalar agora</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:13.5px;color:#333;line-height:1.6">
+      <div style="background:#f4f9ff;border-radius:10px;padding:12px 14px">
+        <div style="font-weight:700;margin-bottom:4px">🟢 Chrome / Edge (Android)</div>
+        Toque no menu <b>⋮</b> → <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.
+      </div>
+      <div style="background:#fff8f0;border-radius:10px;padding:12px 14px">
+        <div style="font-weight:700;margin-bottom:4px">🔵 Samsung Internet</div>
+        Toque no menu <b>☰</b> → <b>"Adicionar página a"</b> → <b>"Tela inicial"</b>.
+      </div>
+      <div style="background:#fdf2f8;border-radius:10px;padding:12px 14px">
+        <div style="font-weight:700;margin-bottom:4px">🟠 Firefox (Android)</div>
+        Toque no menu <b>⋮</b> → <b>"Instalar"</b> ou <b>"Adicionar à tela inicial"</b>.
+      </div>
+      <div style="background:#f0f4ff;border-radius:10px;padding:12px 14px">
+        <div style="font-weight:700;margin-bottom:4px">⚪ Safari (iPhone)</div>
+        Toque no ícone de <b>Compartilhar</b> → <b>"Adicionar à Tela de Início"</b>.
+      </div>
+    </div>
+    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0">
+      <button class="btn-cancel" onclick="closeInstallHelp()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay bottom" id="itemactions-overlay" onclick="closeItemActions()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:8px 0 28px;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+    <div id="ia-item-name" style="text-align:center;font-size:15px;font-weight:700;color:#333;padding:12px 20px;border-bottom:1px solid #f0f0f0"></div>
+    <div onclick="iaAction('edit')" style="display:flex;align-items:center;gap:14px;padding:15px 22px;font-size:15.5px;cursor:pointer;border-bottom:1px solid #f5f5f5">✏️ <span>Editar</span></div>
+    <div onclick="iaAction('toggle')" id="ia-toggle-label" style="display:flex;align-items:center;gap:14px;padding:15px 22px;font-size:15.5px;cursor:pointer;border-bottom:1px solid #f5f5f5">🛒 <span>Marcar como comprado</span></div>
+    <div onclick="iaAction('move')" style="display:flex;align-items:center;gap:14px;padding:15px 22px;font-size:15.5px;cursor:pointer;border-bottom:1px solid #f5f5f5">📦 <span>Mover para outra lista</span></div>
+    <div onclick="iaAction('delete')" style="display:flex;align-items:center;gap:14px;padding:15px 22px;font-size:15.5px;cursor:pointer;color:#c00">🗑️ <span>Excluir</span></div>
+  </div>
+</div>
+
+<div class="overlay" id="delitem-overlay" onclick="closeDelItem()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:15px;color:#333" id="delitem-title">Remover este produto da lista?</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDelItem()">Não</button>
+      <button class="btn-ok" style="color:#ef4444" onclick="confirmDelItem()">Sim, remover</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay bottom" id="move-overlay" onclick="closeMove()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:65vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+    <div style="font-size:15px;font-weight:600;color:#333;text-align:center;margin-bottom:4px">📦 Mover produto</div>
+    <div id="move-item-name" style="font-size:13px;color:#888;text-align:center;margin-bottom:14px"></div>
+    <div id="move-list-container"></div>
+  </div>
+</div>
+
+<div class="overlay bottom" id="listmenu-overlay" onclick="closeListMenu()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:75vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+    <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:6px 0 10px;text-align:center">Minhas Listas</div>
+    <div id="listmenu-budget" style="text-align:center;font-size:12px;color:#666;margin-bottom:10px"></div>
+    <div id="lists-container"></div>
+    <button onclick="openNewList()" style="width:100%;margin-top:10px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">+ Nova Lista</button>
+  </div>
+</div>
+
+<div class="overlay" id="newlist-overlay" onclick="closeNewList()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:16px;font-weight:600;color:#333" id="newlist-title">🆕 Nova Lista</div>
+    <input id="newlist-inp" type="text" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:15px;outline:none" placeholder="Ex: Mercado, Farmácia, Casa Nova…">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNewList()">Cancelar</button>
+      <button class="btn-ok" onclick="confirmNewList()">Salvar ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="dellist-overlay" onclick="closeDelList()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:15px;color:#333" id="dellist-title">Excluir esta lista e todos os seus produtos?</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDelList()">Não</button>
+      <button class="btn-ok" style="color:#ef4444" onclick="confirmDelList()">Sim, excluir</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="aboutme-overlay" onclick="closeAboutMe()">
   <div class="modal" onclick="event.stopPropagation()" style="max-width:360px;max-height:78vh;overflow-y:auto">
     <div style="text-align:center;margin-bottom:14px">
@@ -316,30 +367,23 @@ Ovos"></textarea>
       <div style="font-size:18px;font-weight:800;color:#1e7a1e">Geraldo Almeida Tavares</div>
       <div style="font-size:12px;color:#999;margin-top:2px">Criador do GeraLista</div>
     </div>
-
     <div style="font-size:14px;color:#333;line-height:1.7;text-align:left">
       <p style="margin-bottom:10px">Tenho 51 anos, sou casado e pai de três filhos. Membro d'<b>A Igreja de Jesus Cristo dos Santos dos Últimos Dias</b> desde dezembro de 1995, servi como missionário de tempo integral na Missão São Paulo Sul, entre 1997 e 1999.</p>
-
       <p style="margin-bottom:10px">Sou formado em <b>Gestão de Recursos Humanos</b> pela Unisa (2011) e em <b>Análise e Desenvolvimento de Sistemas</b> pela Univille (2026). Também concluí a formação em <b>Desenvolvimento Web</b> (Frontend, Backend e Full Stack) pelo Senai SC (2025–2026).</p>
-
       <p style="margin-bottom:10px">Gosto de frequentar os templos da minha igreja e sou apaixonado pelo programa de estudo pessoal e familiar <i>Vem, e Segue-me</i>. Procuro ler o Livro de Mórmon e a Bíblia Sagrada todos os dias.</p>
-
       <p style="margin-bottom:14px">Treino na academia buscando equilíbrio entre saúde física e mental.</p>
-
       <div style="background:#f0fdf4;border-radius:10px;padding:14px;text-align:center;font-weight:700;color:#1e7a1e;font-size:13.5px;line-height:1.9">
         "Sou um filho de Deus"<br>
         "Sou um filho do Convênio"<br>
         "Sou um discípulo de Jesus Cristo"
       </div>
     </div>
-
     <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0">
       <button class="btn-cancel" onclick="closeAboutMe()">Fechar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL SOBRE -->
 <div class="overlay" id="about-overlay" onclick="closeAbout()">
   <div class="modal" onclick="event.stopPropagation()" style="max-width:340px">
     <div style="text-align:center;margin-bottom:16px">
@@ -348,7 +392,6 @@ Ovos"></textarea>
       <div style="font-size:12px;color:#999;margin-top:2px">Desenvolvido por <b>GeraCodeBR</b></div>
       <div style="font-size:11px;color:#bbb;margin-top:2px">© 2026 · Todos os direitos reservados</div>
     </div>
-
     <div style="display:flex;flex-direction:column;gap:8px">
       <a href="https://wa.me/5547984959491" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#f0fdf4;border-radius:10px;padding:11px 14px;color:#1a1a1a">
         <span style="font-size:20px">💬</span>
@@ -375,7 +418,6 @@ Ovos"></textarea>
         <div><div style="font-size:14px;font-weight:600">TikTok</div><div style="font-size:12px;color:#888">@geratechbr</div></div>
       </a>
     </div>
-
     <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
       <button onclick="closeAbout();openAboutMe()" style="width:100%;background:#f0fdf4;color:#1e7a1e;border:1.5px solid #1e7a1e;border-radius:10px;padding:11px;font-weight:700;font-size:14px;cursor:pointer">👤 Sobre mim</button>
       <button class="btn-cancel" onclick="closeAbout()">Fechar</button>
@@ -383,98 +425,6 @@ Ovos"></textarea>
   </div>
 </div>
 
-<!-- MODAL AJUDA INSTALAÇÃO -->
-<div class="overlay" id="install-overlay" onclick="closeInstallHelp()">
-  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px;max-height:78vh;overflow-y:auto">
-    <div style="text-align:center;margin-bottom:14px">
-      <div style="font-size:38px;margin-bottom:4px">📲</div>
-      <div style="font-size:17px;font-weight:800;color:#1e7a1e">Instalar o GeraLista</div>
-      <div style="font-size:12px;color:#999;margin-top:2px">Escolha seu navegador abaixo</div>
-    </div>
-
-    <div id="install-native" style="display:none;margin-bottom:16px">
-      <button onclick="doInstall()" style="width:100%;background:#1e7a1e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">⬇️ Instalar agora</button>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:12px;font-size:13.5px;color:#333;line-height:1.6">
-      <div style="background:#f4f9ff;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">🟢 Chrome / Edge (Android)</div>
-        Toque no menu <b>⋮</b> (3 pontinhos, canto superior) → <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.
-      </div>
-      <div style="background:#fff8f0;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">🔵 Samsung Internet</div>
-        Toque no menu <b>☰</b> (canto inferior) → <b>"Adicionar página a"</b> → <b>"Tela inicial"</b>.
-      </div>
-      <div style="background:#fdf2f8;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">🟠 Firefox (Android)</div>
-        Toque no menu <b>⋮</b> → <b>"Instalar"</b> ou <b>"Adicionar à tela inicial"</b>.
-      </div>
-      <div style="background:#f0f4ff;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">⚪ Safari (iPhone)</div>
-        Toque no ícone de <b>Compartilhar</b> (quadrado com seta ↑) → <b>"Adicionar à Tela de Início"</b>.
-      </div>
-    </div>
-
-    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0">
-      <button class="btn-cancel" onclick="closeInstallHelp()">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CONFIRMAR EXCLUSÃO ITEM -->
-<div class="overlay" id="delitem-overlay" onclick="closeDelItem()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" style="font-size:15px;color:#333" id="delitem-title">Remover este produto da lista?</div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeDelItem()">Não</button>
-      <button class="btn-ok" style="color:#ef4444" onclick="confirmDelItem()">Sim, remover</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL MOVER ITEM -->
-<div class="overlay bottom" id="move-overlay" onclick="closeMove()">
-  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:65vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
-    <div style="font-size:15px;font-weight:600;color:#333;text-align:center;margin-bottom:4px">📦 Mover produto</div>
-    <div id="move-item-name" style="font-size:13px;color:#888;text-align:center;margin-bottom:14px"></div>
-    <div id="move-list-container"></div>
-  </div>
-</div>
-
-<!-- MODAL LISTAS -->
-<div class="overlay bottom" id="listmenu-overlay" onclick="closeListMenu()">
-  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:75vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
-    <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:6px 0 10px;text-align:center">Minhas Listas</div>
-    <div id="listmenu-budget" style="text-align:center;font-size:12px;color:#666;margin-bottom:10px"></div>
-    <div id="lists-container"></div>
-    <button onclick="openNewList()" style="width:100%;margin-top:10px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">+ Nova Lista</button>
-  </div>
-</div>
-
-<!-- MODAL NOVA LISTA -->
-<div class="overlay" id="newlist-overlay" onclick="closeNewList()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" style="font-size:16px;font-weight:600;color:#333" id="newlist-title">🆕 Nova Lista</div>
-    <input id="newlist-inp" type="text" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:15px;outline:none" placeholder="Ex: Mercado, Farmácia, Casa Nova…">
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeNewList()">Cancelar</button>
-      <button class="btn-ok" onclick="confirmNewList()">Salvar ✓</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL EXCLUIR LISTA -->
-<div class="overlay" id="dellist-overlay" onclick="closeDelList()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" style="font-size:15px;color:#333" id="dellist-title">Excluir esta lista e todos os seus produtos?</div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeDelList()">Não</button>
-      <button class="btn-ok" style="color:#ef4444" onclick="confirmDelList()">Sim, excluir</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL LIMPAR -->
 <div class="overlay" id="clear-overlay" onclick="clearCancel()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" style="font-size:16px;color:#333;margin-bottom:16px">Tem certeza que deseja limpar toda a lista?</div>
@@ -485,9 +435,8 @@ Ovos"></textarea>
   </div>
 </div>
 
-<!-- MENU -->
 <div class="overlay bottom" id="menu-overlay" onclick="closeMenu()">
-  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:20px 24px 32px;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:20px 24px 32px;max-height:75vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
     <div onclick="setFilter('cesta');closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ver produtos na cesta (<span id="m-cesta">0</span>)</div>
     <div onclick="setFilter('lista');closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer;font-weight:700">Ver produtos na lista (<span id="m-lista">0</span>)</div>
     <div onclick="setFilter('todos');closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Exibir todos os produtos (<span id="m-todos">0</span>)</div>
@@ -505,16 +454,15 @@ Ovos"></textarea>
 </div>
 
 <script>
-/* ── MULTI-LISTAS ── */
 function migrateOldData() {
-  // se existir dado antigo (formato único), migra para o novo formato de múltiplas listas
   const oldItems = localStorage.getItem('geralista_items');
   const hasNewFormat = localStorage.getItem('geralista_lists');
   if (oldItems && !hasNewFormat) {
     const oldBudget = localStorage.getItem('geralista_budget') || '0';
-    const lists = [{ id: 'list_1', name: 'GeraLista', items: JSON.parse(oldItems), budget: parseFloat(oldBudget) }];
+    const lists = [{ id: 'list_1', name: 'GeraLista', items: JSON.parse(oldItems) }];
     localStorage.setItem('geralista_lists', JSON.stringify(lists));
     localStorage.setItem('geralista_current', 'list_1');
+    localStorage.setItem('geralista_global_budget', oldBudget);
     localStorage.removeItem('geralista_items');
     localStorage.removeItem('geralista_budget');
   }
@@ -524,10 +472,9 @@ migrateOldData();
 let lists = JSON.parse(localStorage.getItem('geralista_lists') || 'null') || [
   { id: 'list_1', name: 'GeraLista', items: [] }
 ];
-// remove orçamento individual das listas antigas, se existir (migração)
-lists.forEach(l => { delete l.budget; });
 
 let globalBudget = parseFloat(localStorage.getItem('geralista_global_budget') || localStorage.getItem('geralista_budget') || '0');
+let budgetMode = localStorage.getItem('geralista_budget_mode') || 'geral';
 
 let currentListId = localStorage.getItem('geralista_current') || lists[0].id;
 if (!lists.find(l => l.id === currentListId)) currentListId = lists[0].id;
@@ -535,27 +482,34 @@ if (!lists.find(l => l.id === currentListId)) currentListId = lists[0].id;
 function getCurrentList() { return lists.find(l => l.id === currentListId); }
 
 let items = getCurrentList().items;
-let budget = globalBudget; // compatibilidade com o resto do código
+let budget = budgetMode === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
 let delListId = null;
 let filter = 'lista', sort = 'pad';
 let npRaw = '', npId = null;
 let bgRaw = '';
-let qtyId = null, qtyVal = 1;
 let editId = null;
+let searchTerm = '';
 
 const save = () => {
   const cur = getCurrentList();
   cur.items = items;
-  globalBudget = budget;
+  if (budgetMode === 'individual') { cur.budget = budget; }
+  else { globalBudget = budget; localStorage.setItem('geralista_global_budget', String(globalBudget)); }
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
   localStorage.setItem('geralista_current', currentListId);
-  localStorage.setItem('geralista_global_budget', String(globalBudget));
+  localStorage.setItem('geralista_budget_mode', budgetMode);
 };
-const getAllListsTotal = () => lists.reduce((s,l) => s + l.items.reduce((s2,i) => s2 + i.qty*i.price, 0), 0);
 const fmt = v => 'R$\u00a0' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const getTotal = () => items.reduce((s,i) => s + i.qty * i.price, 0);
+const getAllListsTotal = () => lists.reduce((s,l) => s + l.items.reduce((s2,i) => s2 + i.qty*i.price, 0), 0);
 
-/* SPLASH */
+function toggleBudgetMode() {
+  budgetMode = budgetMode === 'geral' ? 'individual' : 'geral';
+  budget = budgetMode === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
+  localStorage.setItem('geralista_budget_mode', budgetMode);
+  render();
+}
+
 window.addEventListener('load', () => {
   const splash = document.getElementById('splash');
   setTimeout(() => {
@@ -564,17 +518,23 @@ window.addEventListener('load', () => {
   }, 2200);
 });
 
-/* RENDER */
 function render() {
   document.getElementById('current-list-name').textContent = getCurrentList().name;
 
   const total = getTotal();
   const allTotal = getAllListsTotal();
-  const saldo = budget - allTotal;
-  const pct = budget > 0 ? Math.min(allTotal / budget * 100, 100) : 0;
+  const gastoRef = budgetMode === 'individual' ? total : allTotal;
+  const saldo = budget - gastoRef;
+  const pct = budget > 0 ? Math.min(gastoRef / budget * 100, 100) : 0;
+
+  document.getElementById('btn-budget-label').textContent = budgetMode === 'individual'
+    ? '✏️ Definir orçamento desta lista' : '✏️ Definir orçamento geral (todas as listas)';
+  const toggleEl = document.querySelector('.budget-toggle span');
+  if (toggleEl) toggleEl.textContent = budgetMode === 'individual'
+    ? 'Trocar para orçamento geral' : 'Trocar para orçamento individual desta lista';
 
   document.getElementById('h-disp').textContent  = fmt(budget);
-  document.getElementById('h-gasto').textContent = fmt(allTotal);
+  document.getElementById('h-gasto').textContent = fmt(gastoRef);
   const se = document.getElementById('h-saldo');
   se.textContent = fmt(saldo);
   se.className = 'bcol-val ' + (saldo < 0 ? 'neg' : pct >= 80 ? 'warn' : 'ok');
@@ -594,13 +554,13 @@ function render() {
   document.getElementById('m-todos').textContent = items.length;
 
   let visible = [...items];
-  if (searchTerm) visible = visible.filter(i => i.name.toLowerCase().includes(searchTerm));
   if (filter === 'cesta') visible = visible.filter(i => i.checked);
   else if (filter === 'lista') visible = visible.filter(i => !i.checked);
   if (sort === 'az') visible.sort((a,b) => a.name.localeCompare(b.name));
   else if (sort === 'za') visible.sort((a,b) => b.name.localeCompare(a.name));
   else if (sort === 'semPrecoTop') visible.sort((a,b) => (a.price>0?1:0) - (b.price>0?1:0));
   else if (sort === 'semPrecoBottom') visible.sort((a,b) => (b.price>0?1:0) - (a.price>0?1:0));
+  if (searchTerm) visible = visible.filter(i => i.name.toLowerCase().includes(searchTerm));
 
   const list = document.getElementById('list');
   list.querySelectorAll('.item').forEach(el => el.remove());
@@ -608,100 +568,100 @@ function render() {
 
   visible.forEach(item => {
     const subtotal = item.qty * item.price;
+    const unitLabel = item.unit === 'kg' ? 'kg' : 'un';
     const div = document.createElement('div');
     div.className = 'item' + (item.checked ? ' done' : '');
 
-    const chk = document.createElement('div');
-    chk.className = 'chk' + (item.checked ? ' on' : '');
-    chk.onclick = () => { item.checked = !item.checked; save(); render(); };
-
     const mid = document.createElement('div');
     mid.className = 'item-mid';
+    mid.onclick = () => openItemActions(item.id);
 
     const nm = document.createElement('div');
     nm.className = 'item-name';
     nm.textContent = item.name;
 
-    let pressTimer;
-    nm.addEventListener('touchstart', () => { pressTimer = setTimeout(() => openEdit(item.id), 600); }, {passive:true});
-    nm.addEventListener('touchend',   () => clearTimeout(pressTimer));
-    nm.addEventListener('touchmove',  () => clearTimeout(pressTimer));
-
     const sub = document.createElement('div');
     sub.className = 'item-sub';
-    const unitLabel = item.unit && item.unit !== 'un' ? item.unit : 'x';
     if (item.price > 0) {
-      sub.innerHTML = item.qty + unitLabel + ' ' + fmt(item.price) +
-        ' <span style="color:#1e7a1e;font-weight:700">= ' + fmt(subtotal) + '</span>';
+      sub.innerHTML = item.qty + ' ' + unitLabel + ' × ' + fmt(item.price) + ' = <b>' + fmt(subtotal) + '</b>';
     } else {
-      sub.textContent = 'Toque no preço para informar';
+      sub.textContent = item.qty + ' ' + unitLabel + ' · toque para definir preço';
     }
     mid.append(nm, sub);
 
-    const right = document.createElement('div');
-    right.className = 'item-right';
+    const chk = document.createElement('div');
+    chk.className = 'chk' + (item.checked ? ' on' : '');
+    chk.onclick = (e) => { e.stopPropagation(); item.checked = !item.checked; save(); render(); };
 
-    const pr = document.createElement('div');
-    pr.className = 'item-price';
-    pr.textContent = item.price > 0 ? fmt(item.price) : '+ Preço';
-    pr.onclick = () => openNP(item.id);
-
-    const qrow = document.createElement('div');
-    qrow.className = 'item-qty-row';
-
-    const bm = document.createElement('button');
-    bm.className = 'btn-q minus'; bm.textContent = '−';
-    bm.onclick = () => { if (item.qty > 1) { item.qty--; save(); render(); } };
-
-    const ql = document.createElement('div');
-    ql.className = 'qty-lbl'; ql.textContent = item.qty + (item.unit && item.unit !== 'un' ? item.unit : 'x');
-    ql.onclick = () => openQty(item.id);
-
-    const bp = document.createElement('button');
-    bp.className = 'btn-q plus'; bp.textContent = '+';
-    bp.onclick = () => { item.qty++; save(); render(); };
-
-    qrow.append(bm, ql, bp);
-    right.append(pr, qrow);
-
-    const rm = document.createElement('button');
-    rm.className = 'btn-rm'; rm.textContent = '✕';
-    rm.onclick = () => openDelItem(item.id);
-
-    const mv = document.createElement('button');
-    mv.className = 'btn-rm'; mv.textContent = '📦'; mv.style.fontSize = '15px';
-    mv.title = 'Mover para outra lista';
-    mv.onclick = () => openMove(item.id);
-
-    div.append(chk, mid, right, mv, rm);
+    div.append(mid, chk);
     list.insertBefore(div, document.getElementById('empty'));
   });
 }
 
-/* BUSCAR PRODUTO NA LISTA */
-let searchTerm = '';
-function searchItem() {
-  searchTerm = document.getElementById('add-inp').value.trim().toLowerCase();
-  render();
-}
-function clearSearch() {
-  searchTerm = '';
+function doSearch() {
+  searchTerm = document.getElementById('search-inp').value.trim().toLowerCase();
   render();
 }
 
-/* NOVA TELA - ADICIONAR PRODUTO */
+/* MENU DE AÇÕES DO ITEM */
+let iaItemId = null;
+function openItemActions(id) {
+  iaItemId = id;
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  document.getElementById('ia-item-name').textContent = item.name;
+  document.getElementById('ia-toggle-label').querySelector('span').textContent =
+    item.checked ? 'Desmarcar do carrinho' : 'Marcar como comprado';
+  document.getElementById('itemactions-overlay').classList.add('open');
+}
+function closeItemActions() { document.getElementById('itemactions-overlay').classList.remove('open'); }
+function iaAction(action) {
+  const id = iaItemId;
+  closeItemActions();
+  if (action === 'edit') openEditItemScreen(id);
+  else if (action === 'toggle') {
+    const item = items.find(i => i.id === id);
+    if (item) { item.checked = !item.checked; save(); render(); }
+  }
+  else if (action === 'move') openMove(id);
+  else if (action === 'delete') openDelItem(id);
+}
+
+/* NOVA TELA - ADICIONAR / EDITAR PRODUTO */
 let selectedUnit = 'un';
+let editingItemId = null;
+
 function openNewItemScreen() {
+  editingItemId = null;
+  document.getElementById('ni-screen-title').textContent = 'Novo Produto';
   document.getElementById('ni-name').value = '';
   document.getElementById('ni-qty').value = '1';
   document.getElementById('ni-price').value = '';
+  document.getElementById('ni-cart').checked = false;
   selectedUnit = 'un';
   document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === 'un'));
   updateNiPreview();
   document.getElementById('newitem-screen').classList.add('open');
   setTimeout(() => document.getElementById('ni-name').focus(), 200);
 }
-function closeNewItemScreen() { document.getElementById('newitem-screen').classList.remove('open'); }
+
+function openEditItemScreen(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  editingItemId = id;
+  document.getElementById('ni-screen-title').textContent = 'Editar Item';
+  document.getElementById('ni-name').value = item.name;
+  document.getElementById('ni-qty').value = item.qty;
+  document.getElementById('ni-price').value = item.price > 0
+    ? item.price.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '';
+  document.getElementById('ni-cart').checked = !!item.checked;
+  selectedUnit = item.unit === 'kg' ? 'kg' : 'un';
+  document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === selectedUnit));
+  updateNiPreview();
+  document.getElementById('newitem-screen').classList.add('open');
+}
+
+function closeNewItemScreen() { document.getElementById('newitem-screen').classList.remove('open'); editingItemId = null; }
 function selectUnit(u) {
   selectedUnit = u;
   document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === u));
@@ -730,14 +690,23 @@ function saveNewItem() {
   if (!name) { document.getElementById('ni-name').focus(); return; }
   const qty = parseFloat(document.getElementById('ni-qty').value) || 1;
   const price = parsePriceInput(document.getElementById('ni-price').value);
-  const id = Date.now();
-  items.push({ id, name, price, qty, unit: selectedUnit, checked: false });
+  const inCart = document.getElementById('ni-cart').checked;
+
+  if (editingItemId) {
+    const item = items.find(i => i.id === editingItemId);
+    if (item) {
+      item.name = name; item.qty = qty; item.price = price;
+      item.unit = selectedUnit; item.checked = inCart;
+    }
+  } else {
+    const id = Date.now();
+    items.push({ id, name, price, qty, unit: selectedUnit, checked: inCart });
+  }
   save();
   closeNewItemScreen();
   render();
 }
 
-/* NUMPAD PREÇO */
 function openNP(id) {
   npId = id;
   const item = items.find(i => i.id === id);
@@ -760,8 +729,9 @@ function npConfirm() {
   closeNP(); render();
 }
 
-/* NUMPAD ORÇAMENTO */
 function openBudget() {
+  document.getElementById('bg-title').textContent = budgetMode === 'individual'
+    ? '💰 Orçamento desta lista' : '💰 Quanto você tem disponível?';
   bgRaw = budget > 0 ? String(Math.round(budget * 100)) : '';
   document.getElementById('bg-disp').textContent = fmt(parseInt(bgRaw || '0') / 100);
   document.getElementById('bg-overlay').classList.add('open');
@@ -774,23 +744,6 @@ function bgKey(k) {
 }
 function bgConfirm() { budget = parseInt(bgRaw || '0') / 100; save(); closeBG(); render(); }
 
-/* QUANTIDADE */
-function openQty(id) {
-  qtyId = id;
-  const item = items.find(i => i.id === id);
-  qtyVal = item ? item.qty : 1;
-  document.getElementById('qty-title').textContent = 'Quantidade — ' + (item ? item.name : '');
-  document.getElementById('qty-num').textContent = qtyVal;
-  document.getElementById('qty-overlay').classList.add('open');
-}
-function closeQty() { document.getElementById('qty-overlay').classList.remove('open'); qtyId = null; }
-function qtyDelta(d) { qtyVal = Math.max(1, qtyVal + d); document.getElementById('qty-num').textContent = qtyVal; }
-function qtyConfirm() {
-  if (qtyId !== null) { const item = items.find(i => i.id === qtyId); if (item) { item.qty = qtyVal; save(); } }
-  closeQty(); render();
-}
-
-/* EDITAR NOME */
 function openEdit(id) {
   editId = id;
   const item = items.find(i => i.id === id);
@@ -807,26 +760,55 @@ function editConfirm() {
   closeEdit(); render();
 }
 
-/* IMPORTAR */
-function openImport() {
-  document.getElementById('import-txt').value = '';
-  document.getElementById('import-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('import-txt').focus(), 200);
+let delItemId = null;
+function openDelItem(id) {
+  delItemId = id;
+  const item = items.find(i => i.id === id);
+  document.getElementById('delitem-title').textContent = 'Remover "' + (item ? item.name : '') + '" da lista?';
+  document.getElementById('delitem-overlay').classList.add('open');
 }
-function closeImport() { document.getElementById('import-overlay').classList.remove('open'); }
-function importList() {
-  const txt = document.getElementById('import-txt').value;
-  let lines = txt.split(/[\n,]/)
-    .map(l => l.replace(/[\u{1F300}-\u{1FFFF}]/gu, '').replace(/[•\-*✓]/g, '').trim())
-    .filter(l => l.length > 1);
-  if (!lines.length) return;
-  lines.forEach(name => {
-    items.push({ id: Date.now() + Math.random(), name, price: 0, qty: 1, checked: false });
-  });
-  save(); closeImport(); render();
+function closeDelItem() { document.getElementById('delitem-overlay').classList.remove('open'); delItemId = null; }
+function confirmDelItem() {
+  items = items.filter(i => i.id !== delItemId);
+  save();
+  closeDelItem();
+  render();
 }
 
-/* MULTI-LISTAS: gerenciamento */
+let moveItemId = null;
+function openMove(itemId) {
+  moveItemId = itemId;
+  const item = items.find(i => i.id === itemId);
+  document.getElementById('move-item-name').textContent = item ? item.name : '';
+
+  const c = document.getElementById('move-list-container');
+  c.innerHTML = '';
+  const others = lists.filter(l => l.id !== currentListId);
+  if (!others.length) {
+    c.innerHTML = '<div style="text-align:center;color:#999;font-size:13px;padding:20px 0">Crie outra lista primeiro para poder mover itens.</div>';
+  } else {
+    others.forEach(l => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:13px 4px;border-bottom:1px solid #f0f0f0;cursor:pointer';
+      row.innerHTML = '<div style="flex:1"><div style="font-size:15px;font-weight:500">' + l.name + '</div><div style="font-size:12px;color:#999">' + l.items.length + (l.items.length===1?' item':' itens') + '</div></div><span style="font-size:18px">➡️</span>';
+      row.onclick = () => confirmMove(l.id);
+      c.appendChild(row);
+    });
+  }
+  document.getElementById('move-overlay').classList.add('open');
+}
+function closeMove() { document.getElementById('move-overlay').classList.remove('open'); moveItemId = null; }
+function confirmMove(targetListId) {
+  const item = items.find(i => i.id === moveItemId);
+  if (!item) return closeMove();
+  items = items.filter(i => i.id !== moveItemId);
+  const target = lists.find(l => l.id === targetListId);
+  target.items.push(item);
+  save();
+  closeMove();
+  render();
+}
+
 function openListMenu() {
   renderListMenu();
   document.getElementById('listmenu-overlay').classList.add('open');
@@ -836,7 +818,7 @@ function closeListMenu() { document.getElementById('listmenu-overlay').classList
 function renderListMenu() {
   const allTotal = getAllListsTotal();
   document.getElementById('listmenu-budget').innerHTML =
-    'Orçamento geral: <b style="color:#1e7a1e">' + fmt(budget) + '</b> · Gasto: <b style="color:#dc2626">' + fmt(allTotal) + '</b>';
+    'Orçamento geral: <b style="color:#1e7a1e">' + fmt(globalBudget) + '</b> · Gasto: <b style="color:#dc2626">' + fmt(allTotal) + '</b>';
   const c = document.getElementById('lists-container');
   c.innerHTML = '';
   lists.forEach(l => {
@@ -844,14 +826,19 @@ function renderListMenu() {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid #f0f0f0;cursor:pointer';
     const isCurrent = l.id === currentListId;
-    row.innerHTML = `
-      <div style="flex:1" onclick="switchList('${l.id}')">
-        <div style="font-size:15px;font-weight:${isCurrent?'700':'500'};color:${isCurrent?'#1e7a1e':'#333'}">${isCurrent?'✓ ':''}${l.name}</div>
-        <div style="font-size:12px;color:#999;margin-top:2px">${l.items.length} ${l.items.length===1?'item':'itens'} · ${fmt(t)}</div>
-      </div>
-      <button onclick="event.stopPropagation();openRenameList('${l.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px">✏️</button>
-      ${lists.length > 1 ? `<button onclick="event.stopPropagation();openDelList('${l.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px;color:#c00">🗑️</button>` : ''}
-    `;
+    row.innerHTML =
+      '<div style="flex:1" data-listid="' + l.id + '">' +
+      '<div style="font-size:15px;font-weight:' + (isCurrent?'700':'500') + ';color:' + (isCurrent?'#1e7a1e':'#333') + '">' + (isCurrent?'✓ ':'') + l.name + '</div>' +
+      '<div style="font-size:12px;color:#999;margin-top:2px">' + l.items.length + ' ' + (l.items.length===1?'item':'itens') + ' · ' + fmt(t) + '</div>' +
+      '</div>' +
+      '<button data-editid="' + l.id + '" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px">✏️</button>' +
+      (lists.length > 1 ? '<button data-delid="' + l.id + '" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px;color:#c00">🗑️</button>' : '');
+
+    row.querySelector('[data-listid]').onclick = () => switchList(l.id);
+    row.querySelector('[data-editid]').onclick = (e) => { e.stopPropagation(); openRenameList(l.id); };
+    const delBtn = row.querySelector('[data-delid]');
+    if (delBtn) delBtn.onclick = (e) => { e.stopPropagation(); openDelList(l.id); };
+
     c.appendChild(row);
   });
 }
@@ -859,6 +846,7 @@ function renderListMenu() {
 function switchList(id) {
   currentListId = id;
   items = getCurrentList().items;
+  budget = budgetMode === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
   localStorage.setItem('geralista_current', currentListId);
   closeListMenu();
   render();
@@ -892,7 +880,6 @@ function confirmNewList() {
     lists.push({ id, name, items: [] });
     currentListId = id;
     items = [];
-    // mantém o filtro (ex: cesta, lista, todos) que já estava em uso
   }
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
   localStorage.setItem('geralista_current', currentListId);
@@ -904,7 +891,7 @@ function confirmNewList() {
 function openDelList(id) {
   delListId = id;
   const l = lists.find(x => x.id === id);
-  document.getElementById('dellist-title').textContent = `Excluir a lista "${l ? l.name : ''}" e todos os seus produtos?`;
+  document.getElementById('dellist-title').textContent = 'Excluir a lista "' + (l ? l.name : '') + '" e todos os seus produtos?';
   document.getElementById('dellist-overlay').classList.add('open');
 }
 function closeDelList() { document.getElementById('dellist-overlay').classList.remove('open'); delListId = null; }
@@ -921,88 +908,31 @@ function confirmDelList() {
   render();
 }
 
-/* EXCLUIR ITEM (com confirmação) */
-let delItemId = null;
-function openDelItem(id) {
-  delItemId = id;
-  const item = items.find(i => i.id === id);
-  document.getElementById('delitem-title').textContent = `Remover "${item ? item.name : ''}" da lista?`;
-  document.getElementById('delitem-overlay').classList.add('open');
+function openImport() {
+  document.getElementById('import-txt').value = '';
+  document.getElementById('import-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('import-txt').focus(), 200);
 }
-function closeDelItem() { document.getElementById('delitem-overlay').classList.remove('open'); delItemId = null; }
-function confirmDelItem() {
-  items = items.filter(i => i.id !== delItemId);
-  save();
-  closeDelItem();
-  render();
-}
-
-/* MOVER ITEM ENTRE LISTAS */
-let moveItemId = null;
-function openMove(itemId) {
-  moveItemId = itemId;
-  const item = items.find(i => i.id === itemId);
-  document.getElementById('move-item-name').textContent = item ? item.name : '';
-
-  const c = document.getElementById('move-list-container');
-  c.innerHTML = '';
-  const others = lists.filter(l => l.id !== currentListId);
-  if (!others.length) {
-    c.innerHTML = '<div style="text-align:center;color:#999;font-size:13px;padding:20px 0">Crie outra lista primeiro para poder mover itens.</div>';
-  } else {
-    others.forEach(l => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:13px 4px;border-bottom:1px solid #f0f0f0;cursor:pointer';
-      row.innerHTML = `<div style="flex:1"><div style="font-size:15px;font-weight:500">${l.name}</div><div style="font-size:12px;color:#999">${l.items.length} ${l.items.length===1?'item':'itens'}</div></div><span style="font-size:18px">➡️</span>`;
-      row.onclick = () => confirmMove(l.id);
-      c.appendChild(row);
-    });
-  }
-
-  document.getElementById('move-overlay').classList.add('open');
-}
-function closeMove() { document.getElementById('move-overlay').classList.remove('open'); moveItemId = null; }
-function confirmMove(targetListId) {
-  const item = items.find(i => i.id === moveItemId);
-  if (!item) return closeMove();
-  items = items.filter(i => i.id !== moveItemId);
-  const target = lists.find(l => l.id === targetListId);
-  target.items.push(item);
-  save();
-  closeMove();
-  render();
+function closeImport() { document.getElementById('import-overlay').classList.remove('open'); }
+function importList() {
+  const txt = document.getElementById('import-txt').value;
+  let lns = txt.split(/[\n,]/)
+    .map(l => l.replace(/[\u{1F300}-\u{1FFFF}]/gu, '').replace(/[•\-*✓]/g, '').trim())
+    .filter(l => l.length > 1);
+  if (!lns.length) return;
+  lns.forEach(name => {
+    items.push({ id: Date.now() + Math.random(), name, price: 0, qty: 1, unit: 'un', checked: false });
+  });
+  save(); closeImport(); render();
 }
 
-/* SOBRE */
-function openAbout() { document.getElementById('about-overlay').classList.add('open'); }
-function closeAbout() { document.getElementById('about-overlay').classList.remove('open'); }
-function openAboutMe() { document.getElementById('aboutme-overlay').classList.add('open'); }
-function closeAboutMe() { document.getElementById('aboutme-overlay').classList.remove('open'); }
-
-/* MENU */
-function openMenu()  { document.getElementById('menu-overlay').classList.add('open'); }
-function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
-function setFilter(f) { filter = f; render(); }
-function setSort(s)   { sort = s; render(); }
-function clearAll()   { document.getElementById('clear-overlay').classList.add('open'); }
-function clearConfirm() { items = []; save(); render(); document.getElementById('clear-overlay').classList.remove('open'); }
-function clearCancel()  { document.getElementById('clear-overlay').classList.remove('open'); }
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeNP(); closeBG(); closeQty(); closeEdit(); closeMenu(); closeImport(); }
-});
-
-render();
-
-/* INSTALAR PWA */
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
 });
 function openInstallHelp() {
-  const nativeBox = document.getElementById('install-native');
-  nativeBox.style.display = deferredPrompt ? 'block' : 'none';
+  document.getElementById('install-native').style.display = deferredPrompt ? 'block' : 'none';
   document.getElementById('install-overlay').classList.add('open');
 }
 function closeInstallHelp() { document.getElementById('install-overlay').classList.remove('open'); }
@@ -1012,6 +942,29 @@ function doInstall() {
   deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeInstallHelp(); });
 }
 window.addEventListener('appinstalled', () => { deferredPrompt = null; });
+
+function openAbout() { document.getElementById('about-overlay').classList.add('open'); }
+function closeAbout() { document.getElementById('about-overlay').classList.remove('open'); }
+function openAboutMe() { document.getElementById('aboutme-overlay').classList.add('open'); }
+function closeAboutMe() { document.getElementById('aboutme-overlay').classList.remove('open'); }
+
+function openMenu()  { document.getElementById('menu-overlay').classList.add('open'); }
+function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
+function setFilter(f) { filter = f; render(); }
+function setSort(s)   { sort = s; render(); }
+function clearAll()   { document.getElementById('clear-overlay').classList.add('open'); }
+function clearConfirm() { items = []; save(); render(); document.getElementById('clear-overlay').classList.remove('open'); }
+function clearCancel()  { document.getElementById('clear-overlay').classList.remove('open'); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeNP(); closeBG(); closeEdit(); closeMenu(); closeImport(); closeDelItem();
+    closeMove(); closeListMenu(); closeNewList(); closeDelList(); closeAbout();
+    closeAboutMe(); closeInstallHelp(); closeNewItemScreen(); closeItemActions();
+  }
+});
+
+render();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/Gera-lista/sw.js');
