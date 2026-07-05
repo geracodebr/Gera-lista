@@ -69,13 +69,14 @@
 :root[data-theme="escuro"] #move-list-container div { border-color:#333 !important; color:#e0e0e0; }
 :root[data-theme="escuro"] #lists-container div[style*="font-weight:500"],
 :root[data-theme="escuro"] #lists-container div[style*="color:#333"] { color:#ddd !important; }
+:root[data-theme="escuro"] #theme-overlay div[style*="font-size:12px"] { color:#ccc !important; }
 
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
 
 #splash { position:fixed; inset:0; background:var(--green); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; transition:opacity .6s ease; }
 #splash .sp-icon { font-size:72px; }
 #splash .sp-title { color:#fff; font-size:30px; font-weight:900; letter-spacing:1px; }
-#splash .sp-sub { color:var(--yellow); font-size:13px; letter-spacing:3px; text-transform:uppercase; }
+#splash .sp-sub { color:#ffffff; opacity:.85; font-size:13px; letter-spacing:3px; text-transform:uppercase; }
 #splash .sp-footer { position:absolute; bottom:36px; text-align:center; }
 #splash .sp-dev { color:rgba(255,255,255,.55); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
 #splash .sp-name { color:#fff; font-size:15px; font-weight:700; letter-spacing:1px; }
@@ -455,12 +456,9 @@ Ovos"></textarea>
   <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;animation:slideUp .22s ease" onclick="event.stopPropagation()">
     <div style="font-size:15px;font-weight:700;color:#333;text-align:center;margin-bottom:16px">🎨 Escolha a cor do app</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-      <div onclick="setTheme('verde')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1e7a1e,#f5c800);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">🇧🇷 Verde/Amarelo</div></div>
-      <div onclick="setTheme('azul')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1a56c9,#7dd3fc);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Azul</div></div>
-      <div onclick="setTheme('roxo')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#fbbf24);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Roxo</div></div>
-      <div onclick="setTheme('rosa')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#db2777,#fde047);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Rosa</div></div>
-      <div onclick="setTheme('laranja')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#ea580c,#facc15);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Laranja</div></div>
-      <div onclick="setTheme('escuro')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#2d2d2d,#f5c800);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Modo Escuro</div></div>
+      <div onclick="setTheme('verde')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1e7a1e,#f5c800);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">☀️ Modo Claro</div></div>
+      <div onclick="setTheme('escuro')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#2d2d2d,#f5c800);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">🌙 Modo Escuro</div></div>
+      <div onclick="setTheme('auto')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1e7a1e 0%,#1e7a1e 50%,#2d2d2d 50%,#2d2d2d 100%);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">⚙️ Automático</div></div>
     </div>
     <button onclick="closeThemePicker()" style="width:100%;margin-top:16px;background:none;border:none;color:#888;font-size:14px;padding:8px;cursor:pointer">Fechar</button>
   </div>
@@ -1069,10 +1067,18 @@ function closeAbout() { document.getElementById('about-overlay').classList.remov
 function openAboutMe() { document.getElementById('aboutme-overlay').classList.add('open'); }
 function closeAboutMe() { document.getElementById('aboutme-overlay').classList.remove('open'); }
 
-let currentTheme = localStorage.getItem('geralista_theme') || 'verde';
+let currentTheme = localStorage.getItem('geralista_theme') || 'auto';
+function resolveTheme() {
+  if (currentTheme === 'auto') {
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDark ? 'escuro' : 'verde';
+  }
+  return currentTheme;
+}
 function applyTheme() {
-  if (currentTheme === 'verde') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', currentTheme);
+  const resolved = resolveTheme();
+  if (resolved === 'verde') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', resolved);
 }
 function openThemePicker() {
   const el = document.getElementById('theme-overlay');
@@ -1089,6 +1095,11 @@ function setTheme(t) {
   closeThemePicker();
 }
 applyTheme();
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (currentTheme === 'auto') applyTheme();
+  });
+}
 
 let feedbackType = 'sugestao';
 function openFeedback() {
