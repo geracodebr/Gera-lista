@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<meta charset="UTF-8">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6112FDRNQV"></script>
 <script>
@@ -9,7 +10,6 @@
   gtag('js', new Date());
   gtag('config', 'G-6112FDRNQV');
 </script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GeraLista</title>
 <link rel="manifest" href="manifest.json">
@@ -21,13 +21,56 @@
   --green: #1e7a1e;
   --green-dk: #165c16;
   --yellow: #f5c800;
+  --accent-header: #fde68a;
   --cream: #f9fce8;
   --cream-dk: #edf5c0;
   --border: #c8de80;
   --red: #dc2626;
-  --text: #1a1a1a;
 }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; font-size:100%; }
+:root[data-theme="azul"] { --green:#1a56c9; --green-dk:#123f96; --yellow:#0369a1; --accent-header:#bfe3ff; --cream:#eef4ff; --cream-dk:#dbe8ff; --border:#b9d4ff; }
+:root[data-theme="roxo"] { --green:#7c3aed; --green-dk:#5b21b6; --yellow:#a21caf; --accent-header:#e9d5ff; --cream:#f6f0ff; --cream-dk:#e9dcff; --border:#d3b8ff; }
+:root[data-theme="rosa"] { --green:#db2777; --green-dk:#9d174d; --yellow:#c2410c; --accent-header:#ffd1e8; --cream:#fff0f6; --cream-dk:#ffdcec; --border:#ffb8d9; }
+:root[data-theme="laranja"] { --green:#ea580c; --green-dk:#9a3412; --yellow:#b45309; --accent-header:#ffe0b3; --cream:#fff7ed; --cream-dk:#ffe4c8; --border:#ffc98a; }
+:root[data-theme="escuro"] { --green:#2d2d2d; --green-dk:#1a1a1a; --yellow:#f5c800; --accent-header:#f5c800; --cream:#121212; --cream-dk:#1e1e1e; --border:#333; }
+:root[data-theme="escuro"] body { color:#eee; }
+:root[data-theme="escuro"] .item-name { color:#f0f0f0; }
+:root[data-theme="escuro"] .item-sub { color:#aaa; }
+:root[data-theme="escuro"] .item-sub b { color:#6fcf6f; }
+:root[data-theme="escuro"] .add-bar input { color:#eee; }
+:root[data-theme="escuro"] .add-bar input::placeholder { color:#888; }
+:root[data-theme="escuro"] .chk { background:#2a2a2a; border-color:#555; }
+:root[data-theme="escuro"] .modal { background:#1e1e1e; }
+:root[data-theme="escuro"] .modal-title { color:#ddd; }
+:root[data-theme="escuro"] .btn-cancel { color:#aaa; }
+:root[data-theme="escuro"] .btn-ok { color:#6fcf6f; }
+:root[data-theme="escuro"] .ni-input { color:#eee; }
+:root[data-theme="escuro"] .ni-label { color:#6fcf6f; }
+:root[data-theme="escuro"] .np-btn { background:#2a2a2a; color:#eee; }
+:root[data-theme="escuro"] .np-display { background:#1a1a1a; color:#eee; border-color:#444; }
+:root[data-theme="escuro"] .unit-btn { background:#2a2a2a; color:#ccc; border-color:#444; }
+:root[data-theme="escuro"] .unit-btn.active { background:#1a3d1a; color:#8fe08f; }
+:root[data-theme="escuro"] .ni-preview { background:#1a3d1a; }
+:root[data-theme="escuro"] .ni-preview-val { color:#6fcf6f; }
+:root[data-theme="escuro"] .fab-add { background:#2d2d2d; border:2px solid #444; }
+:root[data-theme="escuro"] .empty { color:#777; }
+/* Menus/bottom-sheets no modo escuro */
+:root[data-theme="escuro"] .overlay.bottom > div,
+:root[data-theme="escuro"] #menu-overlay > div,
+:root[data-theme="escuro"] #listmenu-overlay > div,
+:root[data-theme="escuro"] #move-overlay > div,
+:root[data-theme="escuro"] #theme-overlay > div,
+:root[data-theme="escuro"] #itemactions-overlay > div {
+  background:#1e1e1e !important;
+}
+:root[data-theme="escuro"] .overlay.bottom > div > div { color:#e0e0e0; border-color:#333 !important; }
+:root[data-theme="escuro"] #menu-overlay div[onclick] { color:#e0e0e0; border-color:#333 !important; }
+:root[data-theme="escuro"] #listmenu-overlay div[style*="border-bottom"] { border-color:#333 !important; }
+:root[data-theme="escuro"] #itemactions-overlay div[onclick] { color:#e0e0e0; border-color:#333 !important; }
+:root[data-theme="escuro"] #move-list-container div { border-color:#333 !important; color:#e0e0e0; }
+:root[data-theme="escuro"] #lists-container div[style*="font-weight:500"],
+:root[data-theme="escuro"] #lists-container div[style*="color:#333"] { color:#ddd !important; }
+
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
 
 #splash { position:fixed; inset:0; background:var(--green); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; transition:opacity .6s ease; }
 #splash .sp-icon { font-size:72px; }
@@ -54,8 +97,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .budget-toggle span { font-size:11px; color:rgba(255,255,255,.75); text-decoration:underline; cursor:pointer; }
 .progress-wrap { margin-top:8px; background:rgba(0,0,0,.2); border-radius:99px; height:5px; overflow:hidden; }
 .progress-fill { height:100%; border-radius:99px; background:var(--yellow); transition:width .3s,background .3s; }
-.progress-fill.warn  { background:#f97316; }
-.progress-fill.danger{ background:#ef4444; }
+.progress-fill.warn  { background:#fbbf24; }
+.progress-fill.danger{ background:#fca5a5; }
 
 .add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; position:sticky; top:0; z-index:45; }
 .add-bar input { flex:1; border:none; background:transparent; outline:none; font-size:15px; }
@@ -81,7 +124,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .footer-col+.footer-col { border-left:1px solid rgba(255,255,255,.2); }
 .footer-label { font-size:11px; opacity:.75; text-transform:uppercase; letter-spacing:.05em; }
 .footer-val { font-size:17px; font-weight:700; }
-.footer-val.carrinho { color:var(--yellow); }
+.footer-val.carrinho { color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.4); }
 .btn-dots { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; gap:4px; align-items:center; justify-content:center; padding:0 16px; }
 .btn-dots span { width:4px; height:4px; background:#fff; border-radius:50%; display:block; }
 
@@ -184,7 +227,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
       <div class="ni-label">Nome do produto</div>
       <input id="ni-name" class="ni-input" type="text" placeholder="Ex: Arroz, Leite, Sabonete…">
     </div>
-
     <div class="ni-row">
       <div class="ni-field">
         <div class="ni-label">Quantidade</div>
@@ -195,7 +237,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
         <input id="ni-price" class="ni-input" type="text" inputmode="numeric" placeholder="R$ 0,00">
       </div>
     </div>
-
     <div class="ni-field">
       <div class="ni-label">Unidade de medida</div>
       <div class="unit-grid" id="unit-grid">
@@ -203,17 +244,14 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
         <div class="unit-btn" data-unit="kg" onclick="selectUnit('kg')">kg</div>
       </div>
     </div>
-
     <div class="ni-field" style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border-radius:10px;padding:12px 14px;margin-bottom:16px">
       <input type="checkbox" id="ni-cart" style="width:20px;height:20px;accent-color:#1e7a1e">
       <label for="ni-cart" style="font-size:14px;font-weight:600;color:#1e7a1e;cursor:pointer">🛒 Inserir no carrinho (marcar como comprado)</label>
     </div>
-
     <div class="ni-preview">
       <div class="ni-preview-label">Subtotal deste produto</div>
       <div class="ni-preview-val" id="ni-preview-val">R$ 0,00</div>
     </div>
-
     <button class="ni-save" onclick="saveNewItem()">Salvar ✓</button>
   </div>
 </div>
@@ -287,22 +325,10 @@ Ovos"></textarea>
       <button onclick="doInstall()" style="width:100%;background:#1e7a1e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">⬇️ Instalar agora</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;font-size:13.5px;color:#333;line-height:1.6">
-      <div style="background:#f4f9ff;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">🟢 Chrome / Edge (Android)</div>
-        Toque no menu <b>⋮</b> → <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.
-      </div>
-      <div style="background:#fff8f0;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">🔵 Samsung Internet</div>
-        Toque no menu <b>☰</b> → <b>"Adicionar página a"</b> → <b>"Tela inicial"</b>.
-      </div>
-      <div style="background:#fdf2f8;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">🟠 Firefox (Android)</div>
-        Toque no menu <b>⋮</b> → <b>"Instalar"</b> ou <b>"Adicionar à tela inicial"</b>.
-      </div>
-      <div style="background:#f0f4ff;border-radius:10px;padding:12px 14px">
-        <div style="font-weight:700;margin-bottom:4px">⚪ Safari (iPhone)</div>
-        Toque no ícone de <b>Compartilhar</b> → <b>"Adicionar à Tela de Início"</b>.
-      </div>
+      <div style="background:#f4f9ff;border-radius:10px;padding:12px 14px"><div style="font-weight:700;margin-bottom:4px">🟢 Chrome / Edge (Android)</div>Toque no menu <b>⋮</b> → <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.</div>
+      <div style="background:#fff8f0;border-radius:10px;padding:12px 14px"><div style="font-weight:700;margin-bottom:4px">🔵 Samsung Internet</div>Toque no menu <b>☰</b> → <b>"Adicionar página a"</b> → <b>"Tela inicial"</b>.</div>
+      <div style="background:#fdf2f8;border-radius:10px;padding:12px 14px"><div style="font-weight:700;margin-bottom:4px">🟠 Firefox (Android)</div>Toque no menu <b>⋮</b> → <b>"Instalar"</b> ou <b>"Adicionar à tela inicial"</b>.</div>
+      <div style="background:#f0f4ff;border-radius:10px;padding:12px 14px"><div style="font-weight:700;margin-bottom:4px">⚪ Safari (iPhone)</div>Toque no ícone de <b>Compartilhar</b> → <b>"Adicionar à Tela de Início"</b>.</div>
     </div>
     <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0">
       <button class="btn-cancel" onclick="closeInstallHelp()">Fechar</button>
@@ -358,6 +384,18 @@ Ovos"></textarea>
   </div>
 </div>
 
+<div class="overlay" id="newlistbudget-overlay" onclick="closeNewListBudget()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px;max-height:75vh;overflow-y:auto">
+    <div class="modal-title" style="font-size:15px;color:#333;font-weight:600" id="nlb-title">Como definir o orçamento desta nova lista?</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+      <button onclick="nlbChoice('new')" style="background:#f0fdf4;border:1.5px solid #1e7a1e;border-radius:10px;padding:13px;font-size:14px;font-weight:700;color:#1e7a1e;cursor:pointer">💰 Definir um novo valor</button>
+      <div id="nlb-agregar-title" style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.04em;margin-top:4px;display:none">Ou copiar orçamento de:</div>
+      <div id="nlb-list-options" style="display:flex;flex-direction:column;gap:8px"></div>
+      <button onclick="nlbChoice('none')" style="background:none;border:none;padding:8px;font-size:13px;color:#999;cursor:pointer">Deixar sem orçamento por enquanto</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="dellist-overlay" onclick="closeDelList()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" style="font-size:15px;color:#333" id="dellist-title">Excluir esta lista e todos os seus produtos?</div>
@@ -381,9 +419,7 @@ Ovos"></textarea>
       <p style="margin-bottom:10px">Gosto de frequentar os templos da minha igreja e sou apaixonado pelo programa de estudo pessoal e familiar <i>Vem, e Segue-me</i>. Procuro ler o Livro de Mórmon e a Bíblia Sagrada todos os dias.</p>
       <p style="margin-bottom:14px">Treino na academia buscando equilíbrio entre saúde física e mental.</p>
       <div style="background:#f0fdf4;border-radius:10px;padding:14px;text-align:center;font-weight:700;color:#1e7a1e;font-size:13.5px;line-height:1.9">
-        "Sou um filho de Deus"<br>
-        "Sou um filho do Convênio"<br>
-        "Sou um discípulo de Jesus Cristo"
+        "Sou um filho de Deus"<br>"Sou um filho do Convênio"<br>"Sou um discípulo de Jesus Cristo"
       </div>
     </div>
     <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0">
@@ -401,30 +437,12 @@ Ovos"></textarea>
       <div style="font-size:11px;color:#bbb;margin-top:2px">© 2026 · Todos os direitos reservados</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <a href="https://wa.me/5547984959491" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#f0fdf4;border-radius:10px;padding:11px 14px;color:#1a1a1a">
-        <span style="font-size:20px">💬</span>
-        <div><div style="font-size:14px;font-weight:600">WhatsApp</div><div style="font-size:12px;color:#888">(47) 98495-9491</div></div>
-      </a>
-      <a href="https://instagram.com/geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#fdf2f8;border-radius:10px;padding:11px 14px;color:#1a1a1a">
-        <span style="font-size:20px">📷</span>
-        <div><div style="font-size:14px;font-weight:600">Instagram</div><div style="font-size:12px;color:#888">@geratechbr</div></div>
-      </a>
-      <a href="https://github.com/geracodebr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#f4f4f5;border-radius:10px;padding:11px 14px;color:#1a1a1a">
-        <span style="font-size:20px">💻</span>
-        <div><div style="font-size:14px;font-weight:600">GitHub</div><div style="font-size:12px;color:#888">geracodebr</div></div>
-      </a>
-      <a href="https://youtube.com/@geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#fef2f2;border-radius:10px;padding:11px 14px;color:#1a1a1a">
-        <span style="font-size:20px">▶️</span>
-        <div><div style="font-size:14px;font-weight:600">YouTube</div><div style="font-size:12px;color:#888">@geratechbr</div></div>
-      </a>
-      <a href="https://facebook.com/geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#eff6ff;border-radius:10px;padding:11px 14px;color:#1a1a1a">
-        <span style="font-size:20px">👍</span>
-        <div><div style="font-size:14px;font-weight:600">Facebook</div><div style="font-size:12px;color:#888">@geratechbr</div></div>
-      </a>
-      <a href="https://tiktok.com/@geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#f4f4f5;border-radius:10px;padding:11px 14px;color:#1a1a1a">
-        <span style="font-size:20px">🎵</span>
-        <div><div style="font-size:14px;font-weight:600">TikTok</div><div style="font-size:12px;color:#888">@geratechbr</div></div>
-      </a>
+      <a href="https://wa.me/5547984959491" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#f0fdf4;border-radius:10px;padding:11px 14px;color:#1a1a1a"><span style="font-size:20px">💬</span><div><div style="font-size:14px;font-weight:600">WhatsApp</div><div style="font-size:12px;color:#888">(47) 98495-9491</div></div></a>
+      <a href="https://instagram.com/geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#fdf2f8;border-radius:10px;padding:11px 14px;color:#1a1a1a"><span style="font-size:20px">📷</span><div><div style="font-size:14px;font-weight:600">Instagram</div><div style="font-size:12px;color:#888">@geratechbr</div></div></a>
+      <a href="https://github.com/geracodebr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#f4f4f5;border-radius:10px;padding:11px 14px;color:#1a1a1a"><span style="font-size:20px">💻</span><div><div style="font-size:14px;font-weight:600">GitHub</div><div style="font-size:12px;color:#888">geracodebr</div></div></a>
+      <a href="https://youtube.com/@geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#fef2f2;border-radius:10px;padding:11px 14px;color:#1a1a1a"><span style="font-size:20px">▶️</span><div><div style="font-size:14px;font-weight:600">YouTube</div><div style="font-size:12px;color:#888">@geratechbr</div></div></a>
+      <a href="https://facebook.com/geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#eff6ff;border-radius:10px;padding:11px 14px;color:#1a1a1a"><span style="font-size:20px">👍</span><div><div style="font-size:14px;font-weight:600">Facebook</div><div style="font-size:12px;color:#888">@geratechbr</div></div></a>
+      <a href="https://tiktok.com/@geratechbr" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:#f4f4f5;border-radius:10px;padding:11px 14px;color:#1a1a1a"><span style="font-size:20px">🎵</span><div><div style="font-size:14px;font-weight:600">TikTok</div><div style="font-size:12px;color:#888">@geratechbr</div></div></a>
     </div>
     <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
       <button onclick="closeAbout();openAboutMe()" style="width:100%;background:#f0fdf4;color:#1e7a1e;border:1.5px solid #1e7a1e;border-radius:10px;padding:11px;font-weight:700;font-size:14px;cursor:pointer">👤 Sobre mim</button>
@@ -433,9 +451,40 @@ Ovos"></textarea>
   </div>
 </div>
 
+<div class="overlay bottom" id="theme-overlay" onclick="closeThemePicker()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+    <div style="font-size:15px;font-weight:700;color:#333;text-align:center;margin-bottom:16px">🎨 Escolha a cor do app</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div onclick="setTheme('verde')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1e7a1e,#f5c800);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">🇧🇷 Verde/Amarelo</div></div>
+      <div onclick="setTheme('azul')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1a56c9,#7dd3fc);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Azul</div></div>
+      <div onclick="setTheme('roxo')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#fbbf24);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Roxo</div></div>
+      <div onclick="setTheme('rosa')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#db2777,#fde047);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Rosa</div></div>
+      <div onclick="setTheme('laranja')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#ea580c,#facc15);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Laranja</div></div>
+      <div onclick="setTheme('escuro')" style="text-align:center;cursor:pointer"><div style="width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#2d2d2d,#f5c800);margin-bottom:6px;border:2px solid #eee"></div><div style="font-size:12px;font-weight:600;color:#333">Modo Escuro</div></div>
+    </div>
+    <button onclick="closeThemePicker()" style="width:100%;margin-top:16px;background:none;border:none;color:#888;font-size:14px;padding:8px;cursor:pointer">Fechar</button>
+  </div>
+</div>
+
+<div class="overlay" id="feedback-overlay" onclick="closeFeedback()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:16px;font-weight:600;color:#333">💬 Sugestões ou Problemas</div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px;text-align:center">Sua mensagem será enviada via WhatsApp para <b>GeraCodeBR</b></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button onclick="setFeedbackType('sugestao')" id="fb-tipo-sugestao" style="flex:1;padding:9px;border-radius:8px;border:1.5px solid #1e7a1e;background:#f0fdf4;color:#1e7a1e;font-weight:700;font-size:13px;cursor:pointer">💡 Sugestão</button>
+      <button onclick="setFeedbackType('problema')" id="fb-tipo-problema" style="flex:1;padding:9px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#555;font-weight:600;font-size:13px;cursor:pointer">⚠️ Problema</button>
+    </div>
+    <textarea id="feedback-txt" style="width:100%;height:110px;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;resize:none;font-family:inherit" placeholder="Descreva sua sugestão ou o problema encontrado…"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeFeedback()">Cancelar</button>
+      <button class="btn-ok" onclick="sendFeedback()">Enviar ✓</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="clear-overlay" onclick="clearCancel()">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" style="font-size:16px;color:#333;margin-bottom:16px">Tem certeza que deseja limpar toda a lista?</div>
+    <div class="modal-title" style="font-size:16px;color:#333;margin-bottom:16px" id="clear-title">Tem certeza que deseja limpar toda a lista?</div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="clearCancel()">Não</button>
       <button class="btn-ok" style="color:#ef4444" onclick="clearConfirm()">Sim, limpar</button>
@@ -454,17 +503,13 @@ Ovos"></textarea>
     <div onclick="setSort('za');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">Ordem alfabética (Z → A)</div>
     <div onclick="setSort('semPrecoTop');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">💲 Sem preço primeiro</div>
     <div onclick="setSort('semPrecoBottom');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">💲 Sem preço por último</div>
-    <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:14px 0 4px">Acessibilidade</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0">
-      <span style="font-size:15px">🔤 Tamanho da letra</span>
-      <div style="display:flex;gap:8px">
-        <button onclick="event.stopPropagation();changeFontSize(-1)" style="width:34px;height:34px;border-radius:50%;border:1.5px solid #ddd;background:#fff;font-size:16px;font-weight:700;cursor:pointer">A-</button>
-        <button onclick="event.stopPropagation();changeFontSize(1)" style="width:34px;height:34px;border-radius:50%;border:1.5px solid #1e7a1e;background:#f0fdf4;color:#1e7a1e;font-size:18px;font-weight:700;cursor:pointer">A+</button>
-      </div>
-    </div>
+    <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:14px 0 4px">Personalização</div>
+    <div onclick="openThemePicker();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">🎨 Escolher cor do app</div>
     <div onclick="openImport();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📋 Importar lista</div>
     <div onclick="openInstallHelp();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📲 Instalar app no celular</div>
     <div onclick="openAbout();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">ℹ️ Sobre / Contato</div>
+    <div onclick="openFeedback();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">💬 Sugestões / Reportar problema</div>
+    <div onclick="clearCartOnly();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer;color:#c2410c">🗑️ Excluir só os comprados (carrinho)</div>
     <div onclick="clearAll();closeMenu()" style="padding:14px 0;font-size:15px;cursor:pointer;color:#c00">Limpar lista e cesta de compras</div>
   </div>
 </div>
@@ -490,15 +535,17 @@ let lists = JSON.parse(localStorage.getItem('geralista_lists') || 'null') || [
 ];
 
 let globalBudget = parseFloat(localStorage.getItem('geralista_global_budget') || localStorage.getItem('geralista_budget') || '0');
-let budgetMode = localStorage.getItem('geralista_budget_mode') || 'geral';
 
 let currentListId = localStorage.getItem('geralista_current') || lists[0].id;
 if (!lists.find(l => l.id === currentListId)) currentListId = lists[0].id;
 
 function getCurrentList() { return lists.find(l => l.id === currentListId); }
 
+lists.forEach(l => { if (!l.budgetMode) l.budgetMode = 'geral'; });
+
 let items = getCurrentList().items;
-let budget = budgetMode === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
+function getBudgetMode() { return getCurrentList().budgetMode || 'geral'; }
+let budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
 let delListId = null;
 let filter = 'lista', sort = 'pad';
 let npRaw = '', npId = null;
@@ -509,35 +556,22 @@ let searchTerm = '';
 const save = () => {
   const cur = getCurrentList();
   cur.items = items;
-  if (budgetMode === 'individual') { cur.budget = budget; }
+  if (getBudgetMode() === 'individual') { cur.budget = budget; }
   else { globalBudget = budget; localStorage.setItem('geralista_global_budget', String(globalBudget)); }
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
   localStorage.setItem('geralista_current', currentListId);
-  localStorage.setItem('geralista_budget_mode', budgetMode);
 };
 const fmt = v => 'R$\u00a0' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const getTotal = () => items.reduce((s,i) => s + i.qty * i.price, 0);
 const getAllListsTotal = () => lists.reduce((s,l) => s + l.items.reduce((s2,i) => s2 + i.qty*i.price, 0), 0);
 
 function toggleBudgetMode() {
-  budgetMode = budgetMode === 'geral' ? 'individual' : 'geral';
-  budget = budgetMode === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
-  localStorage.setItem('geralista_budget_mode', budgetMode);
+  const cur = getCurrentList();
+  cur.budgetMode = cur.budgetMode === 'geral' ? 'individual' : 'geral';
+  localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  budget = cur.budgetMode === 'individual' ? (cur.budget || 0) : globalBudget;
   render();
 }
-
-/* ACESSIBILIDADE - TAMANHO DA FONTE */
-let fontStep = parseInt(localStorage.getItem('geralista_font_step') || '0');
-function applyFontSize() {
-  const pct = 100 + (fontStep * 12);
-  document.body.style.fontSize = pct + '%';
-}
-function changeFontSize(dir) {
-  fontStep = Math.max(0, Math.min(4, fontStep + dir));
-  localStorage.setItem('geralista_font_step', String(fontStep));
-  applyFontSize();
-}
-applyFontSize();
 
 window.addEventListener('load', () => {
   const splash = document.getElementById('splash');
@@ -552,14 +586,15 @@ function render() {
 
   const total = getTotal();
   const allTotal = getAllListsTotal();
-  const gastoRef = budgetMode === 'individual' ? total : allTotal;
+  const mode = getBudgetMode();
+  const gastoRef = mode === 'individual' ? total : allTotal;
   const saldo = budget - gastoRef;
   const pct = budget > 0 ? Math.min(gastoRef / budget * 100, 100) : 0;
 
-  document.getElementById('btn-budget-label').textContent = budgetMode === 'individual'
+  document.getElementById('btn-budget-label').textContent = mode === 'individual'
     ? '✏️ Definir orçamento desta lista' : '✏️ Definir orçamento geral (todas as listas)';
   const toggleEl = document.querySelector('.budget-toggle span');
-  if (toggleEl) toggleEl.textContent = budgetMode === 'individual'
+  if (toggleEl) toggleEl.textContent = mode === 'individual'
     ? 'Trocar para orçamento geral' : 'Trocar para orçamento individual desta lista';
 
   document.getElementById('h-disp').textContent  = fmt(budget);
@@ -632,7 +667,6 @@ function doSearch() {
   render();
 }
 
-/* MENU DE AÇÕES DO ITEM */
 let iaItemId = null;
 function openItemActions(id) {
   iaItemId = id;
@@ -656,7 +690,6 @@ function iaAction(action) {
   else if (action === 'delete') openDelItem(id);
 }
 
-/* NOVA TELA - ADICIONAR / EDITAR PRODUTO */
 let selectedUnit = 'un';
 let editingItemId = null;
 
@@ -759,7 +792,7 @@ function npConfirm() {
 }
 
 function openBudget() {
-  document.getElementById('bg-title').textContent = budgetMode === 'individual'
+  document.getElementById('bg-title').textContent = getBudgetMode() === 'individual'
     ? '💰 Orçamento desta lista' : '💰 Quanto você tem disponível?';
   bgRaw = budget > 0 ? String(Math.round(budget * 100)) : '';
   document.getElementById('bg-disp').textContent = fmt(parseInt(bgRaw || '0') / 100);
@@ -809,7 +842,6 @@ function openMove(itemId) {
   moveItemId = itemId;
   const item = items.find(i => i.id === itemId);
   document.getElementById('move-item-name').textContent = item ? item.name : '';
-
   const c = document.getElementById('move-list-container');
   c.innerHTML = '';
   const others = lists.filter(l => l.id !== currentListId);
@@ -852,22 +884,23 @@ function renderListMenu() {
   c.innerHTML = '';
   lists.forEach(l => {
     const t = l.items.reduce((s,i) => s + i.qty * i.price, 0);
+    const modeTag = l.budgetMode === 'individual'
+      ? ' · <span style="color:#1e7a1e">orç. individual: ' + fmt(l.budget || 0) + '</span>'
+      : ' · <span style="color:#999">orç. geral</span>';
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid #f0f0f0;cursor:pointer';
     const isCurrent = l.id === currentListId;
     row.innerHTML =
       '<div style="flex:1" data-listid="' + l.id + '">' +
       '<div style="font-size:15px;font-weight:' + (isCurrent?'700':'500') + ';color:' + (isCurrent?'#1e7a1e':'#333') + '">' + (isCurrent?'✓ ':'') + l.name + '</div>' +
-      '<div style="font-size:12px;color:#999;margin-top:2px">' + l.items.length + ' ' + (l.items.length===1?'item':'itens') + ' · ' + fmt(t) + '</div>' +
+      '<div style="font-size:12px;color:#999;margin-top:2px">' + l.items.length + ' ' + (l.items.length===1?'item':'itens') + ' · ' + fmt(t) + modeTag + '</div>' +
       '</div>' +
       '<button data-editid="' + l.id + '" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px">✏️</button>' +
       (lists.length > 1 ? '<button data-delid="' + l.id + '" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px;color:#c00">🗑️</button>' : '');
-
     row.querySelector('[data-listid]').onclick = () => switchList(l.id);
     row.querySelector('[data-editid]').onclick = (e) => { e.stopPropagation(); openRenameList(l.id); };
     const delBtn = row.querySelector('[data-delid]');
     if (delBtn) delBtn.onclick = (e) => { e.stopPropagation(); openDelList(l.id); };
-
     c.appendChild(row);
   });
 }
@@ -875,7 +908,7 @@ function renderListMenu() {
 function switchList(id) {
   currentListId = id;
   items = getCurrentList().items;
-  budget = budgetMode === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
+  budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
   localStorage.setItem('geralista_current', currentListId);
   closeListMenu();
   render();
@@ -898,23 +931,82 @@ function openRenameList(id) {
   setTimeout(() => document.getElementById('newlist-inp').focus(), 200);
 }
 function closeNewList() { document.getElementById('newlist-overlay').classList.remove('open'); renameId = null; }
+
 function confirmNewList() {
   const name = document.getElementById('newlist-inp').value.trim();
   if (!name) return;
+
   if (renameId) {
     const l = lists.find(x => x.id === renameId);
     if (l) l.name = name;
-  } else {
-    const id = 'list_' + Date.now();
-    lists.push({ id, name, items: [] });
-    currentListId = id;
-    items = [];
+    localStorage.setItem('geralista_lists', JSON.stringify(lists));
+    closeNewList();
+    renderListMenu();
+    render();
+    return;
   }
+
+  const id = 'list_' + Date.now();
+  lists.push({ id, name, items: [], budget: 0, budgetMode: 'individual' });
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
-  localStorage.setItem('geralista_current', currentListId);
   closeNewList();
+
+  const nlbOverlay = document.getElementById('newlistbudget-overlay');
+  if (nlbOverlay) {
+    pendingNewListId = id;
+    const nlbTitleEl = document.getElementById('nlb-title');
+    if (nlbTitleEl) nlbTitleEl.textContent = 'Como definir o orçamento de "' + name + '"?';
+    renderNlbOptions(id);
+    nlbOverlay.classList.add('open');
+  } else {
+    switchList(id);
+    renderListMenu();
+  }
+}
+
+let pendingNewListId = null;
+function closeNewListBudget() {
+  const el = document.getElementById('newlistbudget-overlay');
+  if (el) el.classList.remove('open');
+}
+function nlbChoice(mode) {
+  const id = pendingNewListId;
+  closeNewListBudget();
+  if (mode === 'new') {
+    switchList(id);
+    renderListMenu();
+    openBudget();
+  } else {
+    switchList(id);
+    renderListMenu();
+  }
+}
+function renderNlbOptions(newId) {
+  const container = document.getElementById('nlb-list-options');
+  const titleEl = document.getElementById('nlb-agregar-title');
+  if (!container) return;
+  container.innerHTML = '';
+  const options = lists.filter(l => l.id !== newId && (l.budget || 0) > 0);
+  if (!options.length) {
+    if (titleEl) titleEl.style.display = 'none';
+    return;
+  }
+  if (titleEl) titleEl.style.display = 'block';
+  options.forEach(l => {
+    const btn = document.createElement('button');
+    btn.style.cssText = 'background:#fff;border:1.5px solid #ddd;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:600;color:#333;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:left';
+    btn.innerHTML = '<span>' + l.name + '</span><span style="color:#1e7a1e;font-weight:800">' + fmt(l.budget || 0) + '</span>';
+    btn.onclick = () => nlbCopyFrom(l.budget || 0);
+    container.appendChild(btn);
+  });
+}
+function nlbCopyFrom(value) {
+  const l = lists.find(x => x.id === pendingNewListId);
+  if (l) { l.budget = value; l.budgetMode = 'individual'; }
+  localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  closeNewListBudget();
+  switchList(pendingNewListId);
   renderListMenu();
-  render();
 }
 
 function openDelList(id) {
@@ -977,12 +1069,87 @@ function closeAbout() { document.getElementById('about-overlay').classList.remov
 function openAboutMe() { document.getElementById('aboutme-overlay').classList.add('open'); }
 function closeAboutMe() { document.getElementById('aboutme-overlay').classList.remove('open'); }
 
+let currentTheme = localStorage.getItem('geralista_theme') || 'verde';
+function applyTheme() {
+  if (currentTheme === 'verde') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', currentTheme);
+}
+function openThemePicker() {
+  const el = document.getElementById('theme-overlay');
+  if (el) el.classList.add('open');
+}
+function closeThemePicker() {
+  const el = document.getElementById('theme-overlay');
+  if (el) el.classList.remove('open');
+}
+function setTheme(t) {
+  currentTheme = t;
+  localStorage.setItem('geralista_theme', t);
+  applyTheme();
+  closeThemePicker();
+}
+applyTheme();
+
+let feedbackType = 'sugestao';
+function openFeedback() {
+  const txtEl = document.getElementById('feedback-txt');
+  if (txtEl) txtEl.value = '';
+  setFeedbackType('sugestao');
+  const el = document.getElementById('feedback-overlay');
+  if (el) el.classList.add('open');
+}
+function closeFeedback() {
+  const el = document.getElementById('feedback-overlay');
+  if (el) el.classList.remove('open');
+}
+function setFeedbackType(type) {
+  feedbackType = type;
+  const sBtn = document.getElementById('fb-tipo-sugestao');
+  const pBtn = document.getElementById('fb-tipo-problema');
+  if (!sBtn || !pBtn) return;
+  if (type === 'sugestao') {
+    sBtn.style.cssText = 'flex:1;padding:9px;border-radius:8px;border:1.5px solid #1e7a1e;background:#f0fdf4;color:#1e7a1e;font-weight:700;font-size:13px;cursor:pointer';
+    pBtn.style.cssText = 'flex:1;padding:9px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#555;font-weight:600;font-size:13px;cursor:pointer';
+  } else {
+    pBtn.style.cssText = 'flex:1;padding:9px;border-radius:8px;border:1.5px solid #dc2626;background:#fef2f2;color:#dc2626;font-weight:700;font-size:13px;cursor:pointer';
+    sBtn.style.cssText = 'flex:1;padding:9px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#555;font-weight:600;font-size:13px;cursor:pointer';
+  }
+}
+function sendFeedback() {
+  const txtEl = document.getElementById('feedback-txt');
+  const txt = txtEl ? txtEl.value.trim() : '';
+  if (!txt) return;
+  const prefix = feedbackType === 'sugestao' ? '💡 Sugestão GeraLista:' : '⚠️ Problema no GeraLista:';
+  const fullMsg = prefix + '\n\n' + txt;
+  const url = 'https://wa.me/5547984959491?text=' + encodeURIComponent(fullMsg);
+  window.open(url, '_blank');
+  closeFeedback();
+}
+
 function openMenu()  { document.getElementById('menu-overlay').classList.add('open'); }
 function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
 function setFilter(f) { filter = f; render(); }
 function setSort(s)   { sort = s; render(); }
-function clearAll()   { document.getElementById('clear-overlay').classList.add('open'); }
-function clearConfirm() { items = []; save(); render(); document.getElementById('clear-overlay').classList.remove('open'); }
+
+let clearMode = 'all';
+function clearAll() {
+  clearMode = 'all';
+  document.getElementById('clear-title').textContent = 'Tem certeza que deseja limpar toda a lista?';
+  document.getElementById('clear-overlay').classList.add('open');
+}
+function clearCartOnly() {
+  const count = items.filter(i => i.checked).length;
+  if (!count) return;
+  clearMode = 'cart';
+  document.getElementById('clear-title').textContent = 'Excluir os ' + count + ' produto' + (count===1?'':'s') + ' marcado' + (count===1?'':'s') + ' como comprado?';
+  document.getElementById('clear-overlay').classList.add('open');
+}
+function clearConfirm() {
+  if (clearMode === 'cart') items = items.filter(i => !i.checked);
+  else items = [];
+  save(); render();
+  document.getElementById('clear-overlay').classList.remove('open');
+}
 function clearCancel()  { document.getElementById('clear-overlay').classList.remove('open'); }
 
 document.addEventListener('keydown', e => {
@@ -990,6 +1157,7 @@ document.addEventListener('keydown', e => {
     closeNP(); closeBG(); closeEdit(); closeMenu(); closeImport(); closeDelItem();
     closeMove(); closeListMenu(); closeNewList(); closeDelList(); closeAbout();
     closeAboutMe(); closeInstallHelp(); closeNewItemScreen(); closeItemActions();
+    closeThemePicker(); closeFeedback(); closeNewListBudget();
   }
 });
 
