@@ -70,6 +70,20 @@
 :root[data-theme="escuro"] #lists-container div[style*="font-weight:500"],
 :root[data-theme="escuro"] #lists-container div[style*="color:#333"] { color:#ddd !important; }
 :root[data-theme="escuro"] #theme-overlay div[style*="font-size:12px"] { color:#ccc !important; }
+:root[data-theme="escuro"] #clear-title,
+:root[data-theme="escuro"] #delitem-title,
+:root[data-theme="escuro"] #dellist-title,
+:root[data-theme="escuro"] #np-title,
+:root[data-theme="escuro"] #bg-title,
+:root[data-theme="escuro"] #qty-title,
+:root[data-theme="escuro"] #newlist-title,
+:root[data-theme="escuro"] #nlb-title,
+:root[data-theme="escuro"] .modal-title { color:#e8e8e8 !important; }
+:root[data-theme="escuro"] .modal div[style*="color:#333"] { color:#e8e8e8 !important; }
+:root[data-theme="escuro"] .modal div[style*="color:#555"] { color:#ccc !important; }
+:root[data-theme="escuro"] .modal input[type="text"] { background:#2a2a2a; color:#eee; border-color:#444 !important; }
+:root[data-theme="escuro"] .modal textarea { background:#2a2a2a; color:#eee; border-color:#444 !important; }
+:root[data-theme="escuro"] .move-list-row { color:#e0e0e0; }
 
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
 
@@ -82,7 +96,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 #splash .sp-name { color:#fff; font-size:15px; font-weight:700; letter-spacing:1px; }
 #splash .sp-copy { color:rgba(255,255,255,.4); font-size:10px; margin-top:4px; }
 
-.header { background:var(--green); color:#fff; padding:14px 16px 12px; position:sticky; top:0; z-index:50; }
+.header { background:var(--green); color:#fff; padding:14px 16px 12px; position:relative; z-index:50; }
 .header-title { text-align:center; font-size:17px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
 .header-title .caret { font-size:11px; opacity:.8; }
 .budget-bar { display:flex; background:rgba(0,0,0,.15); border-radius:10px; overflow:hidden; }
@@ -101,7 +115,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .progress-fill.warn  { background:#fbbf24; }
 .progress-fill.danger{ background:#fca5a5; }
 
-.add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; position:sticky; top:0; z-index:45; }
+.add-bar { background:var(--cream-dk); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:10px 12px; gap:8px; position:sticky; top:0; z-index:45; box-shadow:0 2px 6px rgba(0,0,0,.08); }
 .add-bar input { flex:1; border:none; background:transparent; outline:none; font-size:15px; }
 
 .list-area { flex:1; overflow-y:auto; padding-bottom:80px; }
@@ -217,7 +231,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
-  
 <div class="newitem-screen" id="newitem-screen">
   <div class="ni-header">
     <button onclick="closeNewItemScreen()">←</button>
