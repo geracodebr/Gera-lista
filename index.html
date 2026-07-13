@@ -11,7 +11,7 @@
   gtag('config', 'G-6112FDRNQV');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>GeraLista - Lista de compras</title>
+<title>GeraLista</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1e7a1e">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -195,6 +195,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
   <button class="btn-budget" onclick="openBudget()" id="btn-budget-label">✏️ Definir orçamento geral (todas as listas)</button>
   <div class="budget-toggle"><span onclick="toggleBudgetMode()">Trocar para orçamento individual desta lista</span></div>
+  <div id="payment-sources-bar" style="display:none;margin-top:8px"></div>
   <div class="progress-wrap"><div class="progress-fill" id="prog" style="width:0%"></div></div>
 </div>
 
@@ -211,7 +212,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 <div class="footer">
   <div class="footer-row">
     <div class="footer-col">
-      <div class="footer-label">📋 Total</div>
+      <div class="footer-label">⏳ Pendente</div>
       <div class="footer-val" id="total-list">R$ 0,00</div>
     </div>
     <div class="footer-col">
@@ -261,6 +262,52 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
       <label for="ni-cart" style="font-size:14px;font-weight:600;color:#1e7a1e;cursor:pointer">🛒 Inserir no carrinho (marcar como comprado)</label>
     </div>
     <button class="ni-save" onclick="saveNewItem()">Salvar ✓</button>
+  </div>
+</div>
+
+<div class="overlay bottom" id="sources-overlay" onclick="closeSources()">
+  <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:75vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
+    <div style="font-size:15px;font-weight:700;color:#333;text-align:center;margin-bottom:4px">💳 Formas de pagamento</div>
+    <div style="font-size:11px;color:#999;text-align:center;margin-bottom:14px">Divida o orçamento desta lista por origem do dinheiro</div>
+    <div id="sources-container"></div>
+    <button onclick="openAddSource()" style="width:100%;margin-top:10px;background:#f0fdf4;color:#1e7a1e;border:1.5px solid #1e7a1e;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">+ Adicionar forma de pagamento</button>
+    <button onclick="closeSources()" style="width:100%;margin-top:8px;background:none;border:none;color:#888;font-size:14px;padding:8px;cursor:pointer">Fechar</button>
+  </div>
+</div>
+
+<div class="overlay" id="addsource-overlay" onclick="closeAddSource()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:16px;font-weight:600;color:#333" id="addsource-title">💳 Nova forma de pagamento</div>
+    <input id="addsource-name" type="text" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:15px;outline:none;margin-bottom:10px" placeholder="Ex: Dinheiro, Crédito, Débito, Pix…">
+    <div class="np-display" id="addsource-disp">R$ 0,00</div>
+    <div class="np-grid">
+      <button class="np-btn" onclick="asKey('7')">7</button><button class="np-btn" onclick="asKey('8')">8</button><button class="np-btn" onclick="asKey('9')">9</button>
+      <button class="np-btn" onclick="asKey('4')">4</button><button class="np-btn" onclick="asKey('5')">5</button><button class="np-btn" onclick="asKey('6')">6</button>
+      <button class="np-btn" onclick="asKey('1')">1</button><button class="np-btn" onclick="asKey('2')">2</button><button class="np-btn" onclick="asKey('3')">3</button>
+      <button class="np-btn del" onclick="asKey('del')">⌫</button>
+      <button class="np-btn" onclick="asKey('0')">0</button>
+      <button class="np-btn ok" onclick="confirmAddSource()">✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="delsource-overlay" onclick="closeDelSource()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="font-size:15px;color:#333" id="delsource-title">Remover esta forma de pagamento?</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDelSource()">Não</button>
+      <button class="btn-ok" style="color:#ef4444" onclick="confirmDelSource()">Sim, remover</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="choosesource-overlay" onclick="closeChooseSource()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <div class="modal-title" style="font-size:15px;font-weight:600;color:#333">De onde saiu este pagamento?</div>
+    <div id="choosesource-container" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0">
+      <button class="btn-cancel" onclick="closeChooseSource()">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -522,6 +569,7 @@ Ovos"></textarea>
     <div onclick="setSort('semPrecoBottom');closeMenu()" style="padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">💲 Sem preço por último</div>
     <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:14px 0 4px">Personalização</div>
     <div onclick="openThemePicker();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">🎨 Escolher cor do app</div>
+    <div onclick="openSources();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">💳 Formas de pagamento desta lista</div>
     <div onclick="openImport();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📋 Importar lista</div>
     <div onclick="openInstallHelp();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">📲 Instalar app no celular</div>
     <div onclick="openAbout();closeMenu()" style="padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:15px;cursor:pointer">ℹ️ Sobre / Contato</div>
@@ -590,6 +638,156 @@ function toggleBudgetMode() {
   render();
 }
 
+/* FONTES DE PAGAMENTO (por lista) */
+function getSources() {
+  const cur = getCurrentList();
+  if (!cur.sources) cur.sources = [];
+  return cur.sources;
+}
+function getSourceSpent(sourceId) {
+  return items.filter(i => i.checked && i.sourceId === sourceId)
+    .reduce((s,i) => s + i.qty * i.price, 0);
+}
+function renderPaymentSourcesBar() {
+  const sources = getSources();
+  const bar = document.getElementById('payment-sources-bar');
+  if (!sources.length) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+  bar.style.gap = '6px';
+  bar.style.flexWrap = 'wrap';
+  bar.innerHTML = sources.map(s => {
+    const spent = getSourceSpent(s.id);
+    const left = (s.value || 0) - spent;
+    const color = left < 0 ? '#ffb3b3' : '#fff';
+    return '<div style="background:rgba(0,0,0,.15);border-radius:8px;padding:4px 10px;font-size:11px;color:#fff">' +
+      s.name + ': <b style="color:' + color + '">' + fmt(left) + '</b></div>';
+  }).join('');
+}
+
+function openSources() {
+  renderSourcesList();
+  document.getElementById('sources-overlay').classList.add('open');
+}
+function closeSources() { document.getElementById('sources-overlay').classList.remove('open'); render(); }
+
+function renderSourcesList() {
+  const sources = getSources();
+  const c = document.getElementById('sources-container');
+  if (!sources.length) {
+    c.innerHTML = '<div style="text-align:center;color:#999;font-size:13px;padding:20px 0">Nenhuma forma de pagamento cadastrada ainda.</div>';
+    return;
+  }
+  c.innerHTML = '';
+  sources.forEach(s => {
+    const spent = getSourceSpent(s.id);
+    const left = (s.value || 0) - spent;
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid #f0f0f0';
+    row.innerHTML =
+      '<div style="flex:1">' +
+      '<div style="font-size:15px;font-weight:600;color:#333">' + s.name + '</div>' +
+      '<div style="font-size:12px;color:#999;margin-top:2px">Total: ' + fmt(s.value||0) + ' · Gasto: ' + fmt(spent) + ' · Saldo: <b style="color:' + (left<0?'#dc2626':'#1e7a1e') + '">' + fmt(left) + '</b></div>' +
+      '</div>' +
+      '<button data-editsrc="' + s.id + '" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px">✏️</button>' +
+      '<button data-delsrc="' + s.id + '" style="background:none;border:none;font-size:16px;cursor:pointer;padding:6px;color:#c00">🗑️</button>';
+    row.querySelector('[data-editsrc]').onclick = () => openAddSource(s.id);
+    row.querySelector('[data-delsrc]').onclick = () => openDelSource(s.id);
+    c.appendChild(row);
+  });
+}
+
+let editingSourceId = null;
+let asRaw = '';
+function openAddSource(id) {
+  editingSourceId = id || null;
+  if (id) {
+    const s = getSources().find(x => x.id === id);
+    document.getElementById('addsource-title').textContent = '✏️ Editar forma de pagamento';
+    document.getElementById('addsource-name').value = s ? s.name : '';
+    asRaw = s && s.value > 0 ? String(Math.round(s.value * 100)) : '';
+  } else {
+    document.getElementById('addsource-title').textContent = '💳 Nova forma de pagamento';
+    document.getElementById('addsource-name').value = '';
+    asRaw = '';
+  }
+  document.getElementById('addsource-disp').textContent = fmt(parseInt(asRaw || '0') / 100);
+  document.getElementById('addsource-overlay').classList.add('open');
+}
+function closeAddSource() { document.getElementById('addsource-overlay').classList.remove('open'); editingSourceId = null; }
+function asKey(k) {
+  if (k === 'del') asRaw = asRaw.slice(0, -1);
+  else if (asRaw.length < 8) asRaw += k;
+  document.getElementById('addsource-disp').textContent = fmt(parseInt(asRaw || '0') / 100);
+}
+function confirmAddSource() {
+  const name = document.getElementById('addsource-name').value.trim();
+  if (!name) return;
+  const value = parseInt(asRaw || '0') / 100;
+  const cur = getCurrentList();
+  if (!cur.sources) cur.sources = [];
+  if (editingSourceId) {
+    const s = cur.sources.find(x => x.id === editingSourceId);
+    if (s) { s.name = name; s.value = value; }
+  } else {
+    cur.sources.push({ id: 'src_' + Date.now(), name, value });
+  }
+  localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  closeAddSource();
+  renderSourcesList();
+}
+
+let delSourceId = null;
+function openDelSource(id) {
+  delSourceId = id;
+  const s = getSources().find(x => x.id === id);
+  document.getElementById('delsource-title').textContent = 'Remover "' + (s ? s.name : '') + '"? Itens vinculados a ela ficarão sem forma de pagamento definida.';
+  document.getElementById('delsource-overlay').classList.add('open');
+}
+function closeDelSource() { document.getElementById('delsource-overlay').classList.remove('open'); delSourceId = null; }
+function confirmDelSource() {
+  const cur = getCurrentList();
+  cur.sources = (cur.sources || []).filter(s => s.id !== delSourceId);
+  items.forEach(i => { if (i.sourceId === delSourceId) i.sourceId = null; });
+  localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  save();
+  closeDelSource();
+  renderSourcesList();
+}
+
+/* ESCOLHER FONTE AO MARCAR COMO COMPRADO */
+let chooseSourceItemId = null;
+function openChooseSource(itemId) {
+  const sources = getSources();
+  if (!sources.length) {
+    // sem fontes cadastradas, marca direto sem perguntar
+    const item = items.find(i => i.id === itemId);
+    if (item) { item.checked = true; save(); render(); }
+    return;
+  }
+  chooseSourceItemId = itemId;
+  const c = document.getElementById('choosesource-container');
+  c.innerHTML = '';
+  sources.forEach(s => {
+    const btn = document.createElement('button');
+    btn.style.cssText = 'background:#f9f9f9;border:1.5px solid #ddd;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:600;color:#333;cursor:pointer;text-align:left';
+    btn.textContent = s.name;
+    btn.onclick = () => confirmChooseSource(s.id);
+    c.appendChild(btn);
+  });
+  const noneBtn = document.createElement('button');
+  noneBtn.style.cssText = 'background:none;border:1.5px dashed #ccc;border-radius:10px;padding:12px 14px;font-size:13px;color:#888;cursor:pointer';
+  noneBtn.textContent = 'Não informar / outra forma';
+  noneBtn.onclick = () => confirmChooseSource(null);
+  c.appendChild(noneBtn);
+  document.getElementById('choosesource-overlay').classList.add('open');
+}
+function closeChooseSource() { document.getElementById('choosesource-overlay').classList.remove('open'); chooseSourceItemId = null; }
+function confirmChooseSource(sourceId) {
+  const item = items.find(i => i.id === chooseSourceItemId);
+  if (item) { item.checked = true; item.sourceId = sourceId; save(); render(); }
+  closeChooseSource();
+}
+
 window.addEventListener('load', () => {
   const splash = document.getElementById('splash');
   setTimeout(() => {
@@ -600,6 +798,7 @@ window.addEventListener('load', () => {
 
 function render() {
   document.getElementById('current-list-name').textContent = getCurrentList().name;
+  renderPaymentSourcesBar();
 
   const total = getTotal();
   const allTotal = getAllListsTotal();
@@ -620,10 +819,11 @@ function render() {
   se.textContent = fmt(saldo);
   se.className = 'bcol-val ' + (saldo < 0 ? 'neg' : pct >= 80 ? 'warn' : 'ok');
 
-  document.getElementById('total-list').textContent = fmt(total) + ' (' + items.length + ')';
-
   const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
   const cartCount = items.filter(i => i.checked).length;
+  const pendingTotal = items.filter(i => !i.checked).reduce((s,i) => s + i.qty * i.price, 0);
+  const pendingCount = items.filter(i => !i.checked).length;
+  document.getElementById('total-list').textContent = fmt(pendingTotal) + ' (' + pendingCount + ')';
   document.getElementById('total-cart').textContent = fmt(cartTotal) + ' (' + cartCount + ')';
 
   const prog = document.getElementById('prog');
@@ -664,7 +864,12 @@ function render() {
     const sub = document.createElement('div');
     sub.className = 'item-sub';
     if (item.price > 0) {
-      sub.innerHTML = item.qty + ' ' + unitLabel + ' × ' + fmt(item.price) + ' = <b>' + fmt(subtotal) + '</b>';
+      let srcTag = '';
+      if (item.checked && item.sourceId) {
+        const src = getSources().find(s => s.id === item.sourceId);
+        if (src) srcTag = ' · <span style="color:#888">' + src.name + '</span>';
+      }
+      sub.innerHTML = item.qty + ' ' + unitLabel + ' × ' + fmt(item.price) + ' = <b>' + fmt(subtotal) + '</b>' + srcTag;
     } else {
       sub.textContent = item.qty + ' ' + unitLabel + ' · toque para definir preço';
     }
@@ -672,7 +877,14 @@ function render() {
 
     const chk = document.createElement('div');
     chk.className = 'chk' + (item.checked ? ' on' : '');
-    chk.onclick = (e) => { e.stopPropagation(); item.checked = !item.checked; save(); render(); };
+    chk.onclick = (e) => {
+      e.stopPropagation();
+      if (!item.checked) {
+        openChooseSource(item.id);
+      } else {
+        item.checked = false; item.sourceId = null; save(); render();
+      }
+    };
 
     div.append(mid, chk);
     list.insertBefore(div, document.getElementById('empty'));
