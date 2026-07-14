@@ -257,9 +257,13 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
         <div class="unit-btn" data-unit="kg" onclick="selectUnit('kg')">kg</div>
       </div>
     </div>
-    <div class="ni-field" style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border-radius:10px;padding:12px 14px;margin-bottom:16px">
-      <input type="checkbox" id="ni-cart" style="width:20px;height:20px;accent-color:#1e7a1e">
+    <div class="ni-field" style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border-radius:10px;padding:12px 14px;margin-bottom:12px">
+      <input type="checkbox" id="ni-cart" style="width:20px;height:20px;accent-color:#1e7a1e" onchange="onNiCartChange()">
       <label for="ni-cart" style="font-size:14px;font-weight:600;color:#1e7a1e;cursor:pointer">🛒 Inserir no carrinho (marcar como comprado)</label>
+    </div>
+    <div id="ni-source-field" class="ni-field" style="display:none">
+      <div class="ni-label">💳 Forma de pagamento</div>
+      <div id="ni-source-options" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
     <button class="ni-save" onclick="saveNewItem()">Salvar ✓</button>
   </div>
@@ -619,7 +623,8 @@ let editId = null;
 let searchTerm = '';
 
 const save = () => {
-  const cur = getCurrentList();
+  const cur = lists.find(l => l.id === currentListId);
+  if (!cur) return;
   cur.items = items;
   if (getBudgetMode() === 'individual') { cur.budget = budget; }
   else { globalBudget = budget; localStorage.setItem('geralista_global_budget', String(globalBudget)); }
@@ -731,9 +736,19 @@ function confirmAddSource() {
   } else {
     cur.sources.push({ id: 'src_' + Date.now(), name, value });
   }
+  syncBudgetFromSources(cur);
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
   closeAddSource();
   renderSourcesList();
+  render();
+}
+
+function syncBudgetFromSources(cur) {
+  if (!cur.sources) cur.sources = [];
+  const sourcesTotal = cur.sources.reduce((s, src) => s + (src.value || 0), 0);
+  cur.budgetMode = 'individual';
+  cur.budget = sourcesTotal;
+  if (cur.id === currentListId) budget = sourcesTotal;
 }
 
 let delSourceId = null;
@@ -748,10 +763,12 @@ function confirmDelSource() {
   const cur = getCurrentList();
   cur.sources = (cur.sources || []).filter(s => s.id !== delSourceId);
   items.forEach(i => { if (i.sourceId === delSourceId) i.sourceId = null; });
+  syncBudgetFromSources(cur);
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
   save();
   closeDelSource();
   renderSourcesList();
+  render();
 }
 
 /* ESCOLHER FONTE AO MARCAR COMO COMPRADO */
@@ -931,6 +948,8 @@ function openNewItemScreen() {
   document.getElementById('ni-qty').placeholder = '';
   document.getElementById('ni-price').value = '';
   document.getElementById('ni-cart').checked = false;
+  document.getElementById('ni-source-field').style.display = 'none';
+  niSelectedSourceId = null;
   selectedUnit = 'un';
   document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === 'un'));
   updateNiPreview();
@@ -952,6 +971,14 @@ function openEditItemScreen(id) {
   selectedUnit = item.unit === 'kg' ? 'kg' : 'un';
   document.querySelectorAll('.unit-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === selectedUnit));
   updateNiPreview();
+  niSelectedSourceId = item.sourceId || null;
+  onNiCartChange();
+  if (item.checked && item.sourceId) {
+    setTimeout(() => {
+      const btn = document.querySelector('#ni-source-options button[data-srcid="' + item.sourceId + '"]');
+      if (btn) btn.click();
+    }, 0);
+  }
   document.getElementById('newitem-screen').classList.add('open');
 }
 
@@ -995,20 +1022,55 @@ function saveNewItem() {
   const qty = parseFloat(document.getElementById('ni-qty').value) || 1;
   const price = parsePriceInput(document.getElementById('ni-price').value);
   const inCart = document.getElementById('ni-cart').checked;
+  const sourceId = niSelectedSourceId;
 
   if (editingItemId) {
     const item = items.find(i => i.id === editingItemId);
     if (item) {
       item.name = name; item.qty = qty; item.price = price;
       item.unit = selectedUnit; item.checked = inCart;
+      item.sourceId = inCart ? sourceId : null;
     }
   } else {
     const id = Date.now();
-    items.push({ id, name, price, qty, unit: selectedUnit, checked: inCart });
+    items.push({ id, name, price, qty, unit: selectedUnit, checked: inCart, sourceId: inCart ? sourceId : null });
   }
   save();
   closeNewItemScreen();
   render();
+}
+
+let niSelectedSourceId = null;
+function onNiCartChange() {
+  const checked = document.getElementById('ni-cart').checked;
+  const field = document.getElementById('ni-source-field');
+  const optsBox = document.getElementById('ni-source-options');
+  if (!checked) { field.style.display = 'none'; niSelectedSourceId = null; return; }
+
+  const sources = getSources();
+  if (!sources.length) { field.style.display = 'none'; niSelectedSourceId = null; return; }
+
+  field.style.display = 'block';
+  optsBox.innerHTML = '';
+  niSelectedSourceId = sources[0].id;
+  sources.forEach((s, idx) => {
+    const btn = document.createElement('button');
+    const isActive = idx === 0;
+    btn.type = 'button';
+    btn.dataset.srcid = s.id;
+    btn.style.cssText = 'padding:10px 14px;border-radius:8px;border:1.5px solid ' + (isActive ? '#1e7a1e' : '#ddd') + ';background:' + (isActive ? '#f0fdf4' : '#fff') + ';color:' + (isActive ? '#1e7a1e' : '#555') + ';font-weight:600;font-size:13px;cursor:pointer;text-align:left';
+    btn.textContent = s.name;
+    btn.onclick = () => {
+      niSelectedSourceId = s.id;
+      optsBox.querySelectorAll('button').forEach(b => {
+        const on = b.dataset.srcid === s.id;
+        b.style.borderColor = on ? '#1e7a1e' : '#ddd';
+        b.style.background = on ? '#f0fdf4' : '#fff';
+        b.style.color = on ? '#1e7a1e' : '#555';
+      });
+    };
+    optsBox.appendChild(btn);
+  });
 }
 
 function openNP(id) {
@@ -1148,9 +1210,11 @@ function renderListMenu() {
 }
 
 function switchList(id) {
+  closeNewItemScreen();
   currentListId = id;
-  items = getCurrentList().items;
-  budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
+  const cur = getCurrentList();
+  items = cur.items; // referência direta ao array desta lista
+  budget = getBudgetMode() === 'individual' ? (cur.budget || 0) : globalBudget;
   localStorage.setItem('geralista_current', currentListId);
   closeListMenu();
   render();
