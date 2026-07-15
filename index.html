@@ -315,6 +315,19 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
+<div class="overlay" id="insuffsource-overlay" onclick="closeInsuffSource()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <div class="modal-title" style="font-size:15px;font-weight:600;color:#c2410c" id="insuff-title">⚠️ Saldo insuficiente</div>
+    <div id="insuff-detail" style="font-size:13px;color:#666;text-align:center;margin-bottom:14px"></div>
+    <div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Completar a diferença com:</div>
+    <div id="insuffsource-container" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
+      <button onclick="confirmInsufficientAnyway()" style="width:100%;background:none;border:1.5px dashed #ccc;border-radius:10px;padding:11px;font-size:13px;color:#888;cursor:pointer">Usar mesmo assim (ficar negativo)</button>
+      <button class="btn-cancel" onclick="closeInsuffSource()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="np-overlay" onclick="closeNP()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="np-title">Preço unitário</div>
@@ -650,8 +663,17 @@ function getSources() {
   return cur.sources;
 }
 function getSourceSpent(sourceId) {
-  return items.filter(i => i.checked && i.sourceId === sourceId)
+  let total = items.filter(i => i.checked && i.sourceId === sourceId)
     .reduce((s,i) => s + i.qty * i.price, 0);
+  // subtrai a parte que foi complementada por outra fonte (não conta na fonte principal)
+  items.filter(i => i.checked && i.sourceId === sourceId && i.sourceSplit).forEach(i => {
+    total -= i.sourceSplit.secondAmount;
+  });
+  // soma o que essa fonte cobriu como complemento de outros itens
+  items.filter(i => i.checked && i.sourceSplit && i.sourceSplit.secondId === sourceId).forEach(i => {
+    total += i.sourceSplit.secondAmount;
+  });
+  return total;
 }
 function renderPaymentSourcesBar() {
   const sources = getSources();
@@ -673,7 +695,7 @@ function openSources() {
   renderSourcesList();
   document.getElementById('sources-overlay').classList.add('open');
 }
-function closeSources() { document.getElementById('sources-overlay').classList.remove('open'); render(); }
+function closeSources() { document.getElementById('sources-overlay').classList.remove('open'); budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget; render(); }
 
 function renderSourcesList() {
   const sources = getSources();
@@ -740,6 +762,7 @@ function confirmAddSource() {
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
   closeAddSource();
   renderSourcesList();
+  budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
   render();
 }
 
@@ -768,15 +791,16 @@ function confirmDelSource() {
   save();
   closeDelSource();
   renderSourcesList();
+  budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
   render();
 }
 
 /* ESCOLHER FONTE AO MARCAR COMO COMPRADO */
 let chooseSourceItemId = null;
+let pendingItemForSource = null;
 function openChooseSource(itemId) {
   const sources = getSources();
   if (!sources.length) {
-    // sem fontes cadastradas, marca direto sem perguntar
     const item = items.find(i => i.id === itemId);
     if (item) { item.checked = true; save(); render(); }
     return;
@@ -785,24 +809,96 @@ function openChooseSource(itemId) {
   const c = document.getElementById('choosesource-container');
   c.innerHTML = '';
   sources.forEach(s => {
+    const spent = getSourceSpent(s.id);
+    const left = (s.value || 0) - spent;
     const btn = document.createElement('button');
-    btn.style.cssText = 'background:#f9f9f9;border:1.5px solid #ddd;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:600;color:#333;cursor:pointer;text-align:left';
-    btn.textContent = s.name;
-    btn.onclick = () => confirmChooseSource(s.id);
+    btn.style.cssText = 'background:#f9f9f9;border:1.5px solid #ddd;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:600;color:#333;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center';
+    btn.innerHTML = '<span>' + s.name + '</span><span style="font-size:12px;font-weight:700;color:' + (left<0?'#dc2626':'#1e7a1e') + '">' + fmt(left) + '</span>';
+    btn.onclick = () => trySelectSource(s.id);
     c.appendChild(btn);
   });
   const noneBtn = document.createElement('button');
   noneBtn.style.cssText = 'background:none;border:1.5px dashed #ccc;border-radius:10px;padding:12px 14px;font-size:13px;color:#888;cursor:pointer';
   noneBtn.textContent = 'Não informar / outra forma';
-  noneBtn.onclick = () => confirmChooseSource(null);
+  noneBtn.onclick = () => confirmChooseSource(null, 0);
   c.appendChild(noneBtn);
   document.getElementById('choosesource-overlay').classList.add('open');
 }
 function closeChooseSource() { document.getElementById('choosesource-overlay').classList.remove('open'); chooseSourceItemId = null; }
-function confirmChooseSource(sourceId) {
+
+function trySelectSource(sourceId) {
   const item = items.find(i => i.id === chooseSourceItemId);
-  if (item) { item.checked = true; item.sourceId = sourceId; save(); render(); }
+  if (!item) return closeChooseSource();
+  const itemTotal = item.qty * item.price;
+  const source = getSources().find(s => s.id === sourceId);
+  const left = (source.value || 0) - getSourceSpent(sourceId);
+
+  if (itemTotal > left) {
+    // saldo insuficiente -- abre modal de complemento
+    closeChooseSource();
+    openInsuffSource(sourceId, itemTotal, left);
+  } else {
+    confirmChooseSource(sourceId, itemTotal);
+  }
+}
+
+function confirmChooseSource(sourceId, amount) {
+  const item = items.find(i => i.id === chooseSourceItemId);
+  if (item) {
+    item.checked = true;
+    item.sourceId = sourceId;
+    item.sourceSplit = null;
+    save(); render();
+  }
   closeChooseSource();
+}
+
+/* SALDO INSUFICIENTE -- COMPLEMENTAR COM OUTRA FONTE */
+let insuffSourceId = null, insuffTotal = 0, insuffLeft = 0;
+function openInsuffSource(sourceId, total, left) {
+  insuffSourceId = sourceId; insuffTotal = total; insuffLeft = left;
+  const source = getSources().find(s => s.id === sourceId);
+  const missing = total - left;
+  document.getElementById('insuff-detail').innerHTML =
+    '<b>' + source.name + '</b> tem apenas ' + fmt(Math.max(left,0)) + ' disponível, mas o item custa ' + fmt(total) + '.<br>Faltam <b style="color:#c2410c">' + fmt(missing) + '</b>.';
+
+  const others = getSources().filter(s => s.id !== sourceId);
+  const c = document.getElementById('insuffsource-container');
+  c.innerHTML = '';
+  if (!others.length) {
+    c.innerHTML = '<div style="text-align:center;color:#999;font-size:13px;padding:8px 0">Nenhuma outra forma de pagamento cadastrada.</div>';
+  } else {
+    others.forEach(s => {
+      const sLeft = (s.value || 0) - getSourceSpent(s.id);
+      const btn = document.createElement('button');
+      btn.style.cssText = 'background:#f9f9f9;border:1.5px solid #ddd;border-radius:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#333;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center';
+      btn.innerHTML = '<span>' + s.name + '</span><span style="font-size:12px;color:' + (sLeft<0?'#dc2626':'#1e7a1e') + '">' + fmt(sLeft) + '</span>';
+      btn.onclick = () => confirmSplitSource(s.id);
+      c.appendChild(btn);
+    });
+  }
+  document.getElementById('insuffsource-overlay').classList.add('open');
+}
+function closeInsuffSource() { document.getElementById('insuffsource-overlay').classList.remove('open'); insuffSourceId = null; }
+function confirmSplitSource(secondSourceId) {
+  const item = items.find(i => i.id === chooseSourceItemId);
+  if (item) {
+    item.checked = true;
+    item.sourceId = insuffSourceId;
+    item.sourceSplit = { secondId: secondSourceId, secondAmount: insuffTotal - Math.max(insuffLeft,0) };
+    save(); render();
+  }
+  closeInsuffSource();
+}
+function confirmInsufficientAnyway() {
+  const item = items.find(i => i.id === chooseSourceItemId);
+  if (item) {
+    item.checked = true;
+    item.sourceId = insuffSourceId;
+    item.sourceSplit = null;
+    save(); render();
+  }
+  closeInsuffSource();
 }
 
 window.addEventListener('load', () => {
@@ -831,7 +927,7 @@ function render() {
     ? 'Trocar para orçamento geral' : 'Trocar para orçamento individual desta lista';
 
   document.getElementById('h-disp').textContent  = fmt(budget);
-  document.getElementById('h-gasto').textContent = fmt(gastoRef);
+  document.getElementById('h-gasto').textContent = fmt(total);
   const se = document.getElementById('h-saldo');
   se.textContent = fmt(saldo);
   se.className = 'bcol-val ' + (saldo < 0 ? 'neg' : pct >= 80 ? 'warn' : 'ok');
@@ -884,7 +980,14 @@ function render() {
       let srcTag = '';
       if (item.checked && item.sourceId) {
         const src = getSources().find(s => s.id === item.sourceId);
-        if (src) srcTag = ' · <span style="color:#888">' + src.name + '</span>';
+        if (src) {
+          if (item.sourceSplit) {
+            const src2 = getSources().find(s => s.id === item.sourceSplit.secondId);
+            srcTag = ' · <span style="color:#c2410c">' + src.name + ' + ' + (src2 ? src2.name : '?') + '</span>';
+          } else {
+            srcTag = ' · <span style="color:#888">' + src.name + '</span>';
+          }
+        }
       }
       sub.innerHTML = item.qty + ' ' + unitLabel + ' × ' + fmt(item.price) + ' = <b>' + fmt(subtotal) + '</b>' + srcTag;
     } else {
@@ -1054,19 +1157,26 @@ function onNiCartChange() {
   optsBox.innerHTML = '';
   niSelectedSourceId = sources[0].id;
   sources.forEach((s, idx) => {
+    const spent = getSourceSpent(s.id);
+    const left = (s.value || 0) - spent;
     const btn = document.createElement('button');
     const isActive = idx === 0;
     btn.type = 'button';
     btn.dataset.srcid = s.id;
-    btn.style.cssText = 'padding:10px 14px;border-radius:8px;border:1.5px solid ' + (isActive ? '#1e7a1e' : '#ddd') + ';background:' + (isActive ? '#f0fdf4' : '#fff') + ';color:' + (isActive ? '#1e7a1e' : '#555') + ';font-weight:600;font-size:13px;cursor:pointer;text-align:left';
-    btn.textContent = s.name;
+    btn.style.cssText = 'padding:10px 14px;border-radius:8px;border:1.5px solid ' + (isActive ? '#1e7a1e' : '#ddd') + ';background:' + (isActive ? '#f0fdf4' : '#fff') + ';color:' + (isActive ? '#1e7a1e' : '#555') + ';font-weight:600;font-size:13px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px';
+    btn.innerHTML = '<span>' + s.name + '</span><span style="font-size:12px;font-weight:700;color:' + (left<0?'#dc2626':(isActive?'#1e7a1e':'#888')) + '">' + fmt(left) + '</span>';
     btn.onclick = () => {
       niSelectedSourceId = s.id;
       optsBox.querySelectorAll('button').forEach(b => {
         const on = b.dataset.srcid === s.id;
+        const bSpent = getSourceSpent(b.dataset.srcid);
+        const bSrc = sources.find(x => x.id === b.dataset.srcid);
+        const bLeft = (bSrc.value || 0) - bSpent;
         b.style.borderColor = on ? '#1e7a1e' : '#ddd';
         b.style.background = on ? '#f0fdf4' : '#fff';
         b.style.color = on ? '#1e7a1e' : '#555';
+        const valSpan = b.querySelector('span:last-child');
+        if (valSpan) valSpan.style.color = bLeft<0 ? '#dc2626' : (on ? '#1e7a1e' : '#888');
       });
     };
     optsBox.appendChild(btn);
