@@ -1,4 +1,4 @@
-const CACHE = 'geralista-v1';
+const CACHE = 'geralista-v2';
 const FILES = [
   '/',
   '/index.html',
