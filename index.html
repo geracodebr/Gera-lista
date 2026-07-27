@@ -5,7 +5,7 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6112FDRNQV"></script>
 <script>
-  window.dataLayer = window.dataLayer || []; 
+  window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-6112FDRNQV');
@@ -174,6 +174,31 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 </style>
 </head>
 <body>
+
+<div id="update-banner" style="display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#1a1a1a;color:#fff;z-index:9997;padding:12px 16px;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,.3)">
+  <span style="font-size:20px">🔄</span>
+  <span style="flex:1;font-size:13px;font-weight:600">Nova versão do GeraLista disponível!</span>
+  <button onclick="applyAppUpdate()" style="background:#1e7a1e;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Atualizar agora</button>
+</div>
+
+<div class="overlay" id="privacy-overlay" style="z-index:9998">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px;max-height:80vh;overflow-y:auto">
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:44px;margin-bottom:6px">🔒</div>
+      <div style="font-size:17px;font-weight:800;color:#1e7a1e">Sua privacidade em primeiro lugar</div>
+    </div>
+    <div style="font-size:14px;color:#333;line-height:1.7;text-align:left">
+      <p style="margin-bottom:10px">✅ Todos os produtos, preços e listas que você cadastrar ficam guardados <b>somente no seu celular</b>.</p>
+      <p style="margin-bottom:10px">✅ <b>Nada</b> é enviado, salvo ou compartilhado em nenhum servidor ou banco de dados externo.</p>
+      <p style="margin-bottom:10px">✅ Ninguém — nem mesmo quem criou o app — tem acesso às suas listas, preços ou informações.</p>
+      <p style="margin-bottom:10px">✅ Se você apagar a lista ou desinstalar o app, os dados <b>somem para sempre</b> — não ficam guardados em lugar nenhum.</p>
+      <p style="margin-bottom:0">👍 Pode usar tranquilo(a). O GeraLista foi feito para ajudar, não para coletar nada de você.</p>
+    </div>
+    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0">
+      <button onclick="closePrivacyNotice()" style="width:100%;background:#1e7a1e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">Entendi, vamos usar! ✓</button>
+    </div>
+  </div>
+</div>
 
 <div id="splash">
   <div class="sp-icon">🛒</div>
@@ -519,6 +544,7 @@ Ovos"></textarea>
     </div>
     <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
       <button onclick="closeAbout();openAboutMe()" style="width:100%;background:#f0fdf4;color:#1e7a1e;border:1.5px solid #1e7a1e;border-radius:10px;padding:11px;font-weight:700;font-size:14px;cursor:pointer">👤 Sobre mim</button>
+      <button onclick="closeAbout();openPrivacyNotice()" style="width:100%;background:#f0fdf4;color:#1e7a1e;border:1.5px solid #1e7a1e;border-radius:10px;padding:11px;font-weight:700;font-size:14px;cursor:pointer">🔒 Privacidade dos seus dados</button>
       <button class="btn-cancel" onclick="closeAbout()">Fechar</button>
     </div>
   </div>
@@ -570,6 +596,20 @@ Ovos"></textarea>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="clearCancel()">Não</button>
       <button class="btn-ok" style="color:#ef4444" onclick="clearConfirm()">Sim, limpar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="budgetupdate-overlay" onclick="closeBudgetUpdate()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <div style="text-align:center;margin-bottom:12px">
+      <div style="font-size:36px;margin-bottom:6px">💰</div>
+      <div style="font-size:15px;font-weight:700;color:#333">Atualizar orçamento disponível?</div>
+    </div>
+    <div id="budgetupdate-detail" style="font-size:13.5px;color:#555;text-align:center;line-height:1.7;margin-bottom:6px"></div>
+    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
+      <button onclick="confirmBudgetUpdate(true)" style="width:100%;background:#1e7a1e;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Sim, atualizar orçamento</button>
+      <button onclick="confirmBudgetUpdate(false)" style="width:100%;background:none;border:1.5px solid #ddd;border-radius:10px;padding:12px;font-size:14px;color:#555;cursor:pointer">Não, manter como está</button>
     </div>
   </div>
 </div>
@@ -1583,10 +1623,35 @@ function clearCartOnly() {
   document.getElementById('clear-overlay').classList.add('open');
 }
 function clearConfirm() {
-  if (clearMode === 'cart') items = items.filter(i => !i.checked);
-  else items = [];
-  save(); render();
   document.getElementById('clear-overlay').classList.remove('open');
+  if (clearMode === 'cart') {
+    const cartTotal = items.filter(i => i.checked).reduce((s,i) => s + i.qty * i.price, 0);
+    const newBudget = Math.max(budget - cartTotal, 0);
+    document.getElementById('budgetupdate-detail').innerHTML =
+      'Você tinha <b>' + fmt(budget) + '</b> disponível e gastou <b>' + fmt(cartTotal) + '</b> nos itens do carrinho.<br><br>Quer atualizar o disponível para <b style="color:#1e7a1e">' + fmt(newBudget) + '</b>?';
+    pendingClearCartTotal = cartTotal;
+    document.getElementById('budgetupdate-overlay').classList.add('open');
+  } else {
+    items = [];
+    save(); render();
+  }
+}
+
+let pendingClearCartTotal = 0;
+function closeBudgetUpdate() { document.getElementById('budgetupdate-overlay').classList.remove('open'); }
+function confirmBudgetUpdate(shouldUpdate) {
+  if (shouldUpdate) {
+    const newBudget = Math.max(budget - pendingClearCartTotal, 0);
+    const cur = getCurrentList();
+    if (getBudgetMode() === 'individual') { cur.budget = newBudget; }
+    else { globalBudget = newBudget; localStorage.setItem('geralista_global_budget', String(globalBudget)); }
+    budget = newBudget; // sincroniza a variável local para não ser sobrescrita pelo save()
+    localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  }
+  items = items.filter(i => !i.checked);
+  save();
+  closeBudgetUpdate();
+  render();
 }
 function clearCancel()  { document.getElementById('clear-overlay').classList.remove('open'); }
 
@@ -1599,10 +1664,46 @@ document.addEventListener('keydown', e => {
   }
 });
 
-render(); 
+render();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/Gera-lista/sw.js');
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    // verifica se já existe uma atualização esperando
+    if (reg.waiting) showUpdateBanner(reg);
+
+    // detecta quando uma nova versão termina de instalar
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      if (!newWorker) return;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          showUpdateBanner(reg);
+        }
+      });
+    });
+
+    // verifica periodicamente se há atualização nova (a cada 60s)
+    setInterval(() => reg.update(), 60000);
+  });
+
+  // quando o novo service worker assume o controle, recarrega a página
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+let waitingWorker = null;
+function showUpdateBanner(reg) {
+  waitingWorker = reg.waiting;
+  const banner = document.getElementById('update-banner');
+  if (banner) banner.style.display = 'flex';
+}
+function applyAppUpdate() {
+  if (waitingWorker) waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+  document.getElementById('update-banner').style.display = 'none';
 }
 </script>
 </body>
