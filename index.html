@@ -268,7 +268,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     <div class="ni-row">
       <div class="ni-field">
         <div class="ni-label">Quantidade</div>
-        <input id="ni-qty" class="ni-input" type="number" inputmode="decimal" value="1" min="0" step="any">
+        <input id="ni-qty" class="ni-input" type="number" inputmode="decimal" placeholder="1" min="0" step="any">
       </div>
       <div class="ni-field">
         <div class="ni-label">Preço unitário</div>
@@ -1090,9 +1090,9 @@ function openNewItemScreen() {
   editingItemId = null;
   document.getElementById('ni-screen-title').textContent = 'Novo Produto';
   document.getElementById('ni-name').value = '';
-  document.getElementById('ni-qty').value = '1';
+  document.getElementById('ni-qty').value = '';
   document.getElementById('ni-qty').step = 'any';
-  document.getElementById('ni-qty').placeholder = '';
+  document.getElementById('ni-qty').placeholder = '1';
   document.getElementById('ni-price').value = '';
   document.getElementById('ni-cart').checked = false;
   document.getElementById('ni-source-field').style.display = 'none';
@@ -1137,11 +1137,9 @@ function selectUnit(u) {
   if (u === 'kg') {
     qtyInput.step = '0.001';
     qtyInput.placeholder = 'Ex: 0,345';
-    if (qtyInput.value === '1') qtyInput.value = '1.000';
   } else {
     qtyInput.step = 'any';
-    qtyInput.placeholder = '';
-    if (qtyInput.value === '1.000') qtyInput.value = '1';
+    qtyInput.placeholder = '1';
   }
   updateNiPreview();
 }
@@ -1159,6 +1157,14 @@ function updateNiPreview() {
   const price = parsePriceInput(document.getElementById('ni-price').value);
   document.getElementById('ni-preview-val').textContent = fmt(qty * price);
 }
+document.addEventListener('focusin', e => {
+  if (e.target && e.target.closest && e.target.closest('.newitem-screen')) {
+    setTimeout(() => {
+      e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }
+});
+
 document.addEventListener('input', e => {
   if (e.target && e.target.id === 'ni-price') { formatPriceField(e.target); updateNiPreview(); }
   else if (e.target && e.target.id === 'ni-qty') { updateNiPreview(); }
