@@ -1,4 +1,4 @@
-const CACHE = 'geralista-v2';
+const CACHE = 'geralista-v3';
 const FILES = [
   '/',
   '/index.html',
@@ -8,7 +8,7 @@ const FILES = [
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
-  self.skipWaiting();
+  // NÃO chama skipWaiting automaticamente -- espera o usuário confirmar
 });
 
 self.addEventListener('activate', e => {
@@ -16,6 +16,13 @@ self.addEventListener('activate', e => {
     Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
   ));
   self.clients.claim();
+});
+
+// permite que a página peça para "pular a espera" e assumir a nova versão
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Network-first: sempre tenta buscar a versão mais nova primeiro.
