@@ -962,6 +962,22 @@ function confirmInsufficientAnyway() {
   closeInsuffSource();
 }
 
+/* AVISO DE PRIVACIDADE */
+function checkPrivacyNotice() {
+  const seen = localStorage.getItem('geralista_privacy_seen');
+  if (!seen) {
+    document.getElementById('privacy-overlay').classList.add('open');
+  }
+}
+function closePrivacyNotice() {
+  localStorage.setItem('geralista_privacy_seen', 'true');
+  document.getElementById('privacy-overlay').classList.remove('open');
+}
+function openPrivacyNotice() {
+  document.getElementById('privacy-overlay').classList.add('open');
+}
+checkPrivacyNotice();
+
 window.addEventListener('load', () => {
   const splash = document.getElementById('splash');
   setTimeout(() => {
