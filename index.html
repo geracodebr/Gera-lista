@@ -75,6 +75,7 @@
 :root[data-theme="escuro"] .modal div[style*="color:#555"] { color:#ccc !important; }
 :root[data-theme="escuro"] .modal input[type="text"] { background:#2a2a2a; color:#eee; border-color:#444 !important; }
 :root[data-theme="escuro"] .modal textarea { background:#2a2a2a; color:#eee; border-color:#444 !important; }
+:root[data-theme="escuro"] #theme-overlay div[style*="font-size:12px"] { color:#ccc !important; }
 
 body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--cream); max-width:430px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
 
@@ -157,7 +158,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .ni-header { background:var(--green); color:#fff; padding:14px 16px; display:flex; align-items:center; gap:14px; }
 .ni-header button { background:none; border:none; color:#fff; font-size:22px; cursor:pointer; padding:4px; }
 .ni-header .ni-title { flex:1; font-size:17px; font-weight:700; }
-.ni-body { flex:1; overflow-y:auto; padding:20px; }
+.ni-body { flex:1; overflow-y:auto; padding:20px; padding-bottom:45vh; }
 .ni-field { margin-bottom:20px; }
 .ni-label { font-size:12px; color:#1e7a1e; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
 .ni-input { width:100%; border:none; border-bottom:2px solid #ddd; padding:10px 2px; font-size:17px; outline:none; background:transparent; }
@@ -326,6 +327,21 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
+<div class="overlay" id="addsourcemode-overlay" onclick="closeAddSourceMode()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <div style="text-align:center;margin-bottom:12px">
+      <div style="font-size:36px;margin-bottom:6px">💳</div>
+      <div style="font-size:15px;font-weight:700;color:#333" id="addsourcemode-title">O que deseja fazer com este valor?</div>
+    </div>
+    <div id="addsourcemode-detail" style="font-size:13.5px;color:#555;text-align:center;line-height:1.7;margin-bottom:6px"></div>
+    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
+      <button onclick="confirmAddSourceMode('add')" style="width:100%;background:#1e7a1e;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">➕ Somar ao valor atual</button>
+      <button onclick="confirmAddSourceMode('replace')" style="width:100%;background:none;border:1.5px solid #ddd;border-radius:10px;padding:12px;font-size:14px;color:#555;cursor:pointer">🔄 Substituir pelo novo valor</button>
+      <button class="btn-cancel" onclick="closeAddSourceMode()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="addsource-overlay" onclick="closeAddSource()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" style="font-size:16px;font-weight:600;color:#333" id="addsource-title">💳 Nova forma de pagamento</div>
@@ -365,7 +381,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 <div class="overlay" id="insuffsource-overlay" onclick="closeInsuffSource()">
   <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
     <div class="modal-title" style="font-size:15px;font-weight:600;color:#c2410c" id="insuff-title">⚠️ Saldo insuficiente</div>
-    <div id="insuff-detail" style="font-size:13px;color:#667;text-align:center;margin-bottom:14px"></div>
+    <div id="insuff-detail" style="font-size:13px;color:#666;text-align:center;margin-bottom:14px"></div>
     <div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Completar a diferença com:</div>
     <div id="insuffsource-container" style="display:flex;flex-direction:column;gap:8px"></div>
     <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
@@ -390,10 +406,24 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
+<div class="overlay" id="bgmode-overlay" onclick="closeBgMode()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <div style="text-align:center;margin-bottom:12px">
+      <div style="font-size:36px;margin-bottom:6px">💰</div>
+      <div style="font-size:15px;font-weight:700;color:#333">O que deseja fazer com este valor?</div>
+    </div>
+    <div id="bgmode-detail" style="font-size:13.5px;color:#555;text-align:center;line-height:1.7;margin-bottom:6px"></div>
+    <div class="modal-actions" style="justify-content:center;border-top:none;margin-top:14px;padding-top:0;flex-direction:column;gap:8px">
+      <button onclick="confirmBgMode('add')" style="width:100%;background:#1e7a1e;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">➕ Somar ao valor atual</button>
+      <button onclick="confirmBgMode('replace')" style="width:100%;background:none;border:1.5px solid #ddd;border-radius:10px;padding:12px;font-size:14px;color:#555;cursor:pointer">🔄 Substituir pelo novo valor</button>
+      <button class="btn-cancel" onclick="closeBgMode()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="bg-overlay" onclick="closeBG()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="bg-title">💰 Quanto você tem disponível?</div>
-    <button onclick="closeBG();openSources()" style="width:100%;background:#f0fdf4;border:1.5px solid #1e7a1e;border-radius:10px;padding:10px;font-size:13px;font-weight:700;color:#1e7a1e;cursor:pointer;margin-bottom:12px">💳 Prefiro informar por forma de pagamento</button>
     <div class="np-display" id="bg-disp">R$ 0,00</div>
     <div class="np-grid">
       <button class="np-btn" onclick="bgKey('7')">7</button><button class="np-btn" onclick="bgKey('8')">8</button><button class="np-btn" onclick="bgKey('9')">9</button>
@@ -420,7 +450,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 <div class="overlay" id="import-overlay" onclick="closeImport()">
   <div class="modal" onclick="event.stopPropagation()">
     <div style="font-size:15px;font-weight:600;color:#333">📋 Importar lista</div>
-    <div style="font-size:13.5px;color:#667;margin-bottom:8px;text-align:center">Cole abaixo sua lista do WhatsApp.<br>Cada linha ou vírgula vira um produto.</div>
+    <div style="font-size:13.5px;color:#666;margin-bottom:8px;text-align:center">Cole abaixo sua lista do WhatsApp.<br>Cada linha ou vírgula vira um produto.</div>
     <textarea id="import-txt" style="width:100%;height:160px;border:1.5px solid #ddd;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;resize:none;font-family:inherit" placeholder="Ex:
 Arroz 5kg
 Feijão
@@ -487,7 +517,7 @@ Ovos"></textarea>
 <div class="overlay bottom" id="listmenu-overlay" onclick="closeListMenu()">
   <div style="background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:430px;padding:16px 20px 28px;max-height:75vh;overflow-y:auto;animation:slideUp .22s ease" onclick="event.stopPropagation()">
     <div style="font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.06em;padding:6px 0 10px;text-align:center">Minhas Listas</div>
-    <div id="listmenu-budget" style="text-align:center;font-size:12px;color:#667;margin-bottom:10px"></div>
+    <div id="listmenu-budget" style="text-align:center;font-size:12px;color:#666;margin-bottom:10px"></div>
     <div id="lists-container"></div>
     <button onclick="openNewList()" style="width:100%;margin-top:10px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">+ Nova Lista</button>
   </div>
@@ -689,7 +719,7 @@ let items = getCurrentList().items;
 function getBudgetMode() {
   const cur = getCurrentList();
   const sourcesTotal = (cur.sources || []).reduce((s, src) => s + (src.value || 0), 0);
-  if (sourcesTotal > 0) return 'individual'; // se tem fontes de pagamento, sempre individual
+  if (sourcesTotal > 0) return 'individual';
   return cur.budgetMode || 'geral';
 }
 let budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
@@ -720,7 +750,6 @@ function toggleBudgetMode() {
   render();
 }
 
-/* FONTES DE PAGAMENTO (por lista) */
 function getSources() {
   const cur = getCurrentList();
   if (!cur.sources) cur.sources = [];
@@ -729,11 +758,9 @@ function getSources() {
 function getSourceSpent(sourceId) {
   let total = items.filter(i => i.checked && i.sourceId === sourceId)
     .reduce((s,i) => s + i.qty * i.price, 0);
-  // subtrai a parte que foi complementada por outra fonte (não conta na fonte principal)
   items.filter(i => i.checked && i.sourceId === sourceId && i.sourceSplit).forEach(i => {
     total -= i.sourceSplit.secondAmount;
   });
-  // soma o que essa fonte cobriu como complemento de outros itens
   items.filter(i => i.checked && i.sourceSplit && i.sourceSplit.secondId === sourceId).forEach(i => {
     total += i.sourceSplit.secondAmount;
   });
@@ -814,11 +841,33 @@ function confirmAddSource() {
   const name = document.getElementById('addsource-name').value.trim();
   if (!name) return;
   const value = parseInt(asRaw || '0') / 100;
+
+  if (editingSourceId) {
+    const cur = getCurrentList();
+    const s = (cur.sources || []).find(x => x.id === editingSourceId);
+    if (s && s.value > 0 && value > 0) {
+      // já tem valor cadastrado -- pergunta se soma ou substitui
+      pendingSourceName = name;
+      pendingSourceValue = value;
+      document.getElementById('addsourcemode-title').textContent = '💳 ' + s.name;
+      document.getElementById('addsourcemode-detail').innerHTML =
+        'Valor atual: <b>' + fmt(s.value) + '</b><br>Novo valor digitado: <b>' + fmt(value) + '</b>';
+      document.getElementById('addsourcemode-overlay').classList.add('open');
+      return;
+    }
+  }
+  applyAddSource(name, value, 'replace');
+}
+
+function applyAddSource(name, value, mode) {
   const cur = getCurrentList();
   if (!cur.sources) cur.sources = [];
   if (editingSourceId) {
     const s = cur.sources.find(x => x.id === editingSourceId);
-    if (s) { s.name = name; s.value = value; }
+    if (s) {
+      s.name = name;
+      s.value = mode === 'add' ? (s.value || 0) + value : value;
+    }
   } else {
     cur.sources.push({ id: 'src_' + Date.now(), name, value });
   }
@@ -829,11 +878,19 @@ function confirmAddSource() {
   render();
 }
 
+let pendingSourceName = '', pendingSourceValue = 0;
+function closeAddSourceMode() { document.getElementById('addsourcemode-overlay').classList.remove('open'); }
+function confirmAddSourceMode(mode) {
+  applyAddSource(pendingSourceName, pendingSourceValue, mode);
+  closeAddSourceMode();
+}
+
 function syncBudgetFromSources(cur) {
   if (!cur.sources) cur.sources = [];
   const sourcesTotal = cur.sources.reduce((s, src) => s + (src.value || 0), 0);
   cur.budgetMode = 'individual';
   cur.budget = sourcesTotal;
+  delete cur.manualBudget;
 }
 
 let delSourceId = null;
@@ -850,13 +907,13 @@ function confirmDelSource() {
   items.forEach(i => { if (i.sourceId === delSourceId) i.sourceId = null; });
   syncBudgetFromSources(cur);
   localStorage.setItem('geralista_lists', JSON.stringify(lists));
+  budget = getBudgetMode() === 'individual' ? (cur.budget || 0) : globalBudget;
   save();
   closeDelSource();
   renderSourcesList();
   render();
 }
 
-/* ESCOLHER FONTE AO MARCAR COMO COMPRADO */
 let chooseSourceItemId = null;
 let pendingItemForSource = null;
 function openChooseSource(itemId) {
@@ -895,7 +952,6 @@ function trySelectSource(sourceId) {
   const left = (source.value || 0) - getSourceSpent(sourceId);
 
   if (itemTotal > left) {
-    // saldo insuficiente -- abre modal de complemento
     closeChooseSource();
     openInsuffSource(sourceId, itemTotal, left);
   } else {
@@ -914,7 +970,6 @@ function confirmChooseSource(sourceId, amount) {
   closeChooseSource();
 }
 
-/* SALDO INSUFICIENTE -- COMPLEMENTAR COM OUTRA FONTE */
 let insuffSourceId = null, insuffTotal = 0, insuffLeft = 0;
 function openInsuffSource(sourceId, total, left) {
   insuffSourceId = sourceId; insuffTotal = total; insuffLeft = left;
@@ -988,7 +1043,6 @@ window.addEventListener('load', () => {
 
 function render() {
   document.getElementById('current-list-name').textContent = getCurrentList().name;
-  // recalcula budget sempre do zero, direto da lista atual, para nunca ficar dessincronizado
   budget = getBudgetMode() === 'individual' ? (getCurrentList().budget || 0) : globalBudget;
   renderPaymentSourcesBar();
 
@@ -1024,13 +1078,6 @@ function render() {
   const prog = document.getElementById('prog');
   prog.style.width = pct + '%';
   prog.className = 'progress-fill' + (pct >= 100 ? ' danger' : pct >= 80 ? ' warn' : '');
-
-  const mCesta = document.getElementById('m-cesta');
-  const mLista = document.getElementById('m-lista');
-  const mTodos = document.getElementById('m-todos');
-  if (mCesta) mCesta.textContent = items.filter(i => i.checked).length;
-  if (mLista) mLista.textContent = items.filter(i => !i.checked).length;
-  if (mTodos) mTodos.textContent = items.length;
 
   let visible = [...items];
   if (filter === 'cesta') visible = visible.filter(i => i.checked);
@@ -1300,8 +1347,11 @@ function npConfirm() {
 }
 
 function openBudget() {
-  document.getElementById('bg-title').textContent = getBudgetMode() === 'individual'
-    ? '💰 Orçamento desta lista' : '💰 Quanto você tem disponível?';
+  if (getBudgetMode() === 'individual') {
+    openSources();
+    return;
+  }
+  document.getElementById('bg-title').textContent = '💰 Quanto você tem disponível?';
   bgRaw = budget > 0 ? String(Math.round(budget * 100)) : '';
   document.getElementById('bg-disp').textContent = fmt(parseInt(bgRaw || '0') / 100);
   document.getElementById('bg-overlay').classList.add('open');
@@ -1313,12 +1363,11 @@ function bgKey(k) {
   document.getElementById('bg-disp').textContent = fmt(parseInt(bgRaw || '0') / 100);
 }
 function bgConfirm() {
-  const cur = getCurrentList();
   const value = parseInt(bgRaw || '0') / 100;
-  if (getBudgetMode() === 'individual') { cur.budget = value; }
-  else { globalBudget = value; localStorage.setItem('geralista_global_budget', String(globalBudget)); }
-  localStorage.setItem('geralista_lists', JSON.stringify(lists));
-  closeBG(); render();
+  globalBudget = value;
+  localStorage.setItem('geralista_global_budget', String(globalBudget));
+  closeBG();
+  render();
 }
 
 function openEdit(id) {
@@ -1691,11 +1740,37 @@ let pendingClearCartTotal = 0;
 function closeBudgetUpdate() { document.getElementById('budgetupdate-overlay').classList.remove('open'); }
 function confirmBudgetUpdate(shouldUpdate) {
   if (shouldUpdate) {
-    const newBudget = Math.max(budget - pendingClearCartTotal, 0);
     const cur = getCurrentList();
-    if (getBudgetMode() === 'individual') { cur.budget = newBudget; }
-    else { globalBudget = newBudget; localStorage.setItem('geralista_global_budget', String(globalBudget)); }
-    budget = newBudget; // sincroniza a variável local para não ser sobrescrita pelo save()
+    const mode = getBudgetMode();
+    const hasSources = (cur.sources || []).length > 0;
+
+    if (mode === 'individual' && hasSources) {
+      // desconta o valor gasto diretamente de cada fonte específica usada
+      items.filter(i => i.checked).forEach(i => {
+        const amount = i.qty * i.price;
+        if (i.sourceSplit) {
+          const mainAmount = amount - i.sourceSplit.secondAmount;
+          const mainSrc = cur.sources.find(s => s.id === i.sourceId);
+          if (mainSrc) mainSrc.value = Math.max((mainSrc.value || 0) - mainAmount, 0);
+          const secSrc = cur.sources.find(s => s.id === i.sourceSplit.secondId);
+          if (secSrc) secSrc.value = Math.max((secSrc.value || 0) - i.sourceSplit.secondAmount, 0);
+        } else if (i.sourceId) {
+          const src = cur.sources.find(s => s.id === i.sourceId);
+          if (src) src.value = Math.max((src.value || 0) - amount, 0);
+        }
+        // itens marcados sem fonte definida não afetam nenhuma fonte específica
+      });
+      syncBudgetFromSources(cur);
+      budget = cur.budget;
+    } else if (mode === 'individual') {
+      const newBudget = Math.max(budget - pendingClearCartTotal, 0);
+      cur.budget = newBudget;
+      budget = newBudget;
+    } else {
+      const newBudget = Math.max(budget - pendingClearCartTotal, 0);
+      globalBudget = newBudget;
+      localStorage.setItem('geralista_global_budget', String(globalBudget));
+    }
     localStorage.setItem('geralista_lists', JSON.stringify(lists));
   }
   items = items.filter(i => !i.checked);
@@ -1718,10 +1793,8 @@ render();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').then(reg => {
-    // verifica se já existe uma atualização esperando
     if (reg.waiting) showUpdateBanner(reg);
 
-    // detecta quando uma nova versão termina de instalar
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       if (!newWorker) return;
@@ -1732,11 +1805,9 @@ if ('serviceWorker' in navigator) {
       });
     });
 
-    // verifica periodicamente se há atualização nova (a cada 60s)
     setInterval(() => reg.update(), 60000);
   });
 
-  // quando o novo service worker assume o controle, recarrega a página
   let refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (refreshing) return;
